@@ -1,0 +1,38 @@
+<div class="modal-header">
+  <h5 class="modal-title">'Add Salary' </h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="salaryForm">
+
+    <!-- Employee -->
+    <div class="mb-3">
+      <label class="form-label">Employee</label>
+      <select class="form-select" formControlName="EmployeeId">
+        <option value="0" disabled>-- Select Employee --</option>
+        <option *ngFor="let emp of empList" [value]="emp.Id">{{ emp.Name }}</option>
+      </select>
+    </div>
+
+    <ng-template #editTemplate>
+      <div class="mb-3">
+        <label class="form-label">Employee</label>
+        <input type="text" class="form-control" [value]="empList" readonly />
+      </div>
+    </ng-template>
+
+
+    <!-- Date -->
+    <div class="mb-3">
+      <label class="form-label">Date</label>
+      <input type="date" class="form-control" [(ngModel)]="date" formControlName="Day" />
+    </div>
+
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="save()" [disabled]="salaryForm.invalid">Save</button>
+</div>

@@ -1,0 +1,180 @@
+<div class="container mt-5">
+  <div class="text-center mb-4">
+    <h2 class="text-primary fw-bold">
+      <i class="bi bi-calendar-check-fill me-2"></i> Leave & Permission Dashboard
+    </h2>
+  </div>
+
+  <div class="d-flex justify-content-start mb-3">
+    <button class="btn btn-primary shadow-sm" (click)="openAddOrUpdate()">
+      <i class="bi bi-plus-lg me-1"></i> Add New Request
+    </button>
+  </div>
+
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <div class="row g-3 align-items-end">
+
+        <!-- بحث بالاسم -->
+        <!-- <div class="col-md-3">
+          <label class="form-label fw-semibold text-secondary">
+            <i class="bi bi-search me-2"></i> Search Name
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Enter employee name..."
+            [(ngModel)]="searchName"
+            (input)="applyFilters()"
+          />
+        </div> -->
+
+        <!-- نوع الطلب -->
+        <!-- <div class="col-md-3">
+          <label class="form-label fw-semibold text-secondary">
+            <i class="bi bi-list-ul me-2"></i> Type
+          </label>
+          <select
+            class="form-select"
+            [(ngModel)]="selectedType"
+            (change)="applyFilters()"
+          >
+            <option value="">All Types</option>
+            <option *ngFor="let t of types" [value]="t">{{ t }}</option>
+          </select>
+        </div> -->
+
+        <!-- الحالة -->
+        <!-- <div class="col-md-3">
+          <label class="form-label fw-semibold text-secondary">
+            <i class="bi bi-clipboard-check me-2"></i> Status
+          </label>
+          <select
+            class="form-select"
+            [(ngModel)]="selectedStatus"
+            (change)="applyFilters()"
+          >
+            <option value="">All Statuses</option>
+            <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+          </select>
+        </div> -->
+
+        <div class="col-md-2">
+          <label class="form-label fw-semibold text-secondary">
+            <i class="bi bi-calendar-date me-2"></i> Start Date
+          </label>
+          <input
+            type="date"
+            class="form-control"
+            
+          />
+        </div>
+
+        <div class="col-md-1 d-flex">
+          <button class="btn btn-outline-secondary w-100" >
+            <i class="bi bi-arrow-counterclockwise"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-lg border-0">
+    <div
+      class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+    >
+      <h5 class="mb-0">Leave & Permission List</h5>
+
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table
+          
+          class="table table-striped table-hover table-borderless table-primary align-middle mb-0"
+        >
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Employee</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>From Time</th>
+              <th>To Time</th>
+              <th>Reason</th>
+              <th>Approved By</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody class="table-group-divider">
+            <tr
+              *ngFor="let leave of reqList; let i = index"
+              class=" color-green"
+                            style="background-color: black !important;"
+
+            >
+              <td >{{ i + 1 }}</td>
+              <td>{{ leave.EmployeeName }}</td>
+              <td>{{ leave.Type }}</td>
+              <td>{{ leave.Status }}</td>
+              <td>{{ leave.StartDate | date:'yyyy-MM-dd' }}</td>
+              <td>{{ leave.EndDate | date:'yyyy-MM-dd' }}</td>
+              <td>{{ leave.FromTime | date:'HH:mm' }}</td>
+              <td>{{ leave.ToTime | date:'HH:mm' }}</td>
+              <td>{{ leave.Reason }}</td>
+              <td>{{ leave.ApprovedByName }}</td>
+             <td class="text-center">
+            <button
+                class="btn btn-sm btn-danger me-2"
+                (click)="delete(leave?.Id ?? 0)"
+            >
+                <i class="bi bi-trash"></i>
+            </button>
+
+            <!-- رفض -->
+            <button
+                class="btn btn-sm btn-danger me-1" title="reject" 
+                (click)="reject(leave?.Id ?? 0)"
+            >
+                <i class="bi bi-x-circle"></i>
+            </button>
+
+            <!-- قبول -->
+            <button
+                class="btn btn-sm btn-success" title="approve"
+                (click)="approve(leave?.Id ?? 0)"
+            >
+
+                <i class="bi bi-check-circle"></i>
+            </button>
+            </td>
+
+            </tr>
+          </tbody>
+
+          <tfoot class="table-secondary">
+            <tr>
+              <td colspan="12" class="text-start pe-4">
+                <strong>Total Requests: {{ reqList.length }}</strong>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noLeaves>
+    <div class="text-center py-5 text-muted">
+      <i class="bi bi-calendar-x display-6 d-block mb-2"></i>
+      <h5>No leave or permission requests found</h5>
+      <button class="btn btn-outline-primary mt-3" (click)="openAddOrUpdate()">
+        <i class="bi bi-plus-circle me-1"></i> Add your first request
+      </button>
+    </div>
+  </ng-template>
+</div>

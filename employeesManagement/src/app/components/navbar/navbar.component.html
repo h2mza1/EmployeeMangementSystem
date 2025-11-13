@@ -1,0 +1,60 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold text-primary" routerLink="/Home">
+      <i class="bi bi-people-fill me-2"></i> Employees Management
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/Home" *ngIf="isLogIn && role=='Employee'" routerLinkActive="active-link">Home</a>
+        </li>
+
+        <li class="nav-item" *ngIf="isLogIn && role=='Admin'">
+          <a class="nav-link" routerLink="/Department" routerLinkActive="active-link">Department</a>
+        </li>
+  <li class="nav-item" *ngIf="isLogIn && role=='Admin'">
+          <a class="nav-link" routerLink="/History" routerLinkActive="active-link">History</a>
+        </li>
+        <li class="nav-item" *ngIf="isLogIn && role=='Admin'">
+          <a class="nav-link" routerLink="/Attendance" routerLinkActive="active-link">Attendance</a>
+        </li>
+
+        <li class="nav-item" *ngIf="isLogIn  && (role=='Admin'|| role=='Manager')">
+          <a class="nav-link" routerLink="/Employee" routerLinkActive="active-link">Employee</a>
+        </li>
+
+        <li class="nav-item" *ngIf="isLogIn  && (role=='Admin' || role=='Manager')" >
+          <a class="nav-link" routerLink="/Finance" routerLinkActive="active-link">Finance</a>
+        </li>
+    <li class="nav-item" *ngIf="isLogIn  && (role=='Admin' || role=='Manager')" >
+          <a class="nav-link" routerLink="/Leave" routerLinkActive="active-link">Leave Requests</a>
+        </li>
+        <li class="nav-item" *ngIf="isLogIn; else formLogin">
+          <a class="nav-link text-danger" role="button" (click)="logout()">Logout</a>
+        </li>
+
+        <ng-template #formLogin>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/Login" routerLinkActive="active-link">Login</a>
+          </li>
+        </ng-template>
+
+      </ul>
+
+      <div *ngIf="isLogIn" class="d-flex align-items-center">
+        <button class="btn  btn-success-sm m-1  " *ngIf="!out" (click)="checkOut()">Check Out</button>
+        <a class="text-primary fw-semibold me-3" (click)="openDialog(userId)" style="cursor: pointer;">
+          {{ info }}
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+

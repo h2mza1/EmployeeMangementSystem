@@ -1,0 +1,72 @@
+<div class="container mt-5">
+
+  <!-- العنوان -->
+  <div class="text-center mb-4">
+    <h2 class="text-primary fw-bold">
+      <i class="bi bi-building me-2"></i> Departments Dashboard
+    </h2>
+  </div>
+
+  <!-- زر الإضافة -->
+  <div class="d-flex justify-content-start mb-3">
+    <button class="btn btn-primary shadow-sm" (click)="openDialog()">
+      <i class="bi bi-plus-lg me-1"></i> Add New Department
+    </button>
+  </div>
+
+  <!-- كارد الجدول -->
+  <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+    <div class="card-header bg-primary text-white fw-semibold d-flex justify-content-between align-items-center">
+      <span><i class="bi bi-list-check me-2"></i> Department List</span>
+      <span *ngIf="departments?.length"><strong>Total:</strong> {{ departments.length }}</span>
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover table-borderless table-primary align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 10%">#</th>
+              <th style="width: 70%">Department Name</th>
+              <th style="width: 20%" class="text-center">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody *ngIf="departments && departments.length > 0; else noDepartments" class="table-group-divider">
+            <tr *ngFor="let dep of departments; let i = index" class="table-primary">
+              <td>{{ i + 1 }}</td>
+              <td class="fw-semibold">{{ dep.Name }}</td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-warning me-2 shadow-sm" (click)="openDialog(dep)">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+                <button class="btn btn-sm btn-danger shadow-sm" (click)="openDeleteDialog(dep.Id)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+
+          <tfoot class="table-secondary">
+            <tr>
+              <td colspan="3" class="text-end pe-4">
+                <strong>Total Departments: {{ departments.length }}</strong>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- لا يوجد أقسام -->
+  <ng-template #noDepartments>
+    <div class="text-center py-5 text-muted">
+      <i class="bi bi-inboxes display-6 d-block mb-2"></i>
+      <h5>No departments found</h5>
+      <button class="btn btn-outline-primary mt-3 shadow-sm" (click)="openDialog()">
+        <i class="bi bi-plus-circle me-1"></i> Add your first department
+      </button>
+    </div>
+  </ng-template>
+</div>

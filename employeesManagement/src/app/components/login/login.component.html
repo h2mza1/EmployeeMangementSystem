@@ -1,0 +1,30 @@
+<section class="vh-100 d-flex justify-content-center align-items-center">
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="login-card">
+      <h3 class="text-center mb-4">Login</h3>
+
+      <form [formGroup]="loginForm" (ngSubmit)="submit()">
+
+        <!-- Email input -->
+        <div class="form-outline mb-4">
+          <input type="email" id="Email" class="form-control form-control-lg" placeholder="Enter a valid email address" formControlName="Email"/>
+          <label class="form-label" for="Email">Email address</label>
+        </div>
+
+        <!-- Password input -->
+        <div class="form-outline mb-3">
+          <input type="password" id="Password" class="form-control form-control-lg" placeholder="Enter password" formControlName="Password"/>
+          <label class="form-label" for="Password">Password</label>
+        </div>
+
+        <!-- Login button -->
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-primary btn-lg w-100" [disabled]="!loginForm.valid">
+            Login
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</section>

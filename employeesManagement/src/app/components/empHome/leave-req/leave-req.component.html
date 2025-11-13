@@ -1,0 +1,75 @@
+<div class="container p-0"></div>
+<!-- leave-req.component.html -->
+
+<div class="modal-header bg-primary text-white rounded-top">
+  <h5 class="modal-title w-100 text-center fw-bold">Request Leave / Permission</h5>
+  <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="close()"></button>
+</div>
+
+<form [formGroup]="reqForm" (ngSubmit)="send()" class="p-4 bg-light rounded-bottom shadow-sm">
+
+  <!-- Employee Name (readonly) -->
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Employee Name</label>
+    <input type="text" class="form-control rounded-3 shadow-sm" formControlName="EmployeeName" readonly>
+  </div>
+
+  <!-- Employee ID (hidden) -->
+  <input type="hidden" formControlName="EmployeeId">
+
+  <!-- Request Type -->
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Request Type</label>
+    <select class="form-select rounded-3 shadow-sm" formControlName="Type" (change)="onTypeChange($event)">
+      <option [value]="RequestType.Annual">Annual</option>
+      <option [value]="RequestType.Sick">Sick </option>
+      <option [value]="RequestType.Annual">Annual Leave</option>
+      <option [value]="RequestType.Sick">Sick Leave</option>
+    </select>
+  </div>
+
+  <!-- Permission Fields -->
+  <div class="row g-3" *ngIf="type == RequestType.Annual; else leaveTemplate">
+    <div class="col-12 col-md-6">
+      <label class="form-label fw-semibold">From Time</label>
+      <input type="time" class="form-control rounded-3 shadow-sm" formControlName="FromTime">
+    </div>
+
+    <div class="col-12 col-md-6">
+      <label class="form-label fw-semibold">To Time</label>
+      <input type="time" class="form-control rounded-3 shadow-sm" formControlName="ToTime">
+    </div>
+      <div class="col-12 col-md-6" >
+        <label class="form-label fw-semibold"> Start Date</label>
+        <input type="date" class="form-control rounded-3 shadow-sm" [value]="date" formControlName="StartDate">
+      </div>
+  </div>
+
+  <!-- Leave Fields -->
+  <ng-template #leaveTemplate>
+    <div class="row g-3">
+      <div class="col-12 col-md-6">
+        <label class="form-label fw-semibold">Start Date</label>
+        <input type="date" class="form-control rounded-3 shadow-sm" formControlName="StartDate">
+      </div>
+
+      <div class="col-12 col-md-6">
+        <label class="form-label fw-semibold">End Date</label>
+        <input type="date" class="form-control rounded-3 shadow-sm" formControlName="EndDate">
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Reason -->
+  <div class="mb-3 mt-3">
+    <label class="form-label fw-semibold">Reason</label>
+    <textarea class="form-control rounded-3 shadow-sm" formControlName="Reason" rows="3"></textarea>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex justify-content-end mt-4">
+    <button type="button" class="btn btn-outline-danger me-2 rounded-pill" (click)="close()">Cancel</button>
+    <button type="submit" class="btn btn-primary rounded-pill" [disabled]="reqForm.invalid">Submit Request</button>
+  </div>
+
+</form>

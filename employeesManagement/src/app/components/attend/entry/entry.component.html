@@ -1,0 +1,49 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ data.id == 0 ? 'Add Attendance' : 'Edit Attendance' }}</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="attendForm">
+
+    <!-- Employee -->
+    <div class="mb-3" *ngIf="data.id == 0; else editTemplate">
+      <label class="form-label">Employee</label>
+      <select class="form-select" formControlName="EmployeeId">
+        <option value="0" disabled>-- Select Employee --</option>
+        <option *ngFor="let emp of empList" [value]="emp.Id">{{ emp.Name }}</option>
+      </select>
+    </div>
+
+    <ng-template #editTemplate>
+      <div class="mb-3">
+        <label class="form-label">Employee</label>
+        <input type="text" class="form-control" [value]="list.EmployeeName" readonly />
+      </div>
+    </ng-template>
+
+    <!-- Check In -->
+    <div class="mb-3">
+      <label class="form-label">Check In</label>
+      <input type="time" class="form-control" formControlName="CheckIn" />
+    </div>
+
+    <!-- Check Out -->
+    <div class="mb-3">
+      <label class="form-label">Check Out</label>
+      <input type="time" class="form-control" formControlName="CheckOut" />
+    </div>
+
+    <!-- Date -->
+    <div class="mb-3">
+      <label class="form-label">Date</label>
+      <input type="date" class="form-control" formControlName="Day" />
+    </div>
+
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="save()" [disabled]="attendForm.invalid">Save</button>
+</div>

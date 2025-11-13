@@ -1,0 +1,96 @@
+<div class="card shadow-lg">
+  <div class="card-header bg-primary text-white fw-semibold">
+    {{ data.Id ? 'Edit Employee' : 'Add New Employee' }}
+  </div>
+
+  <div class="card-body">
+    <form (ngSubmit)="save()">
+      <div class="row g-3">
+
+        <!-- Name -->
+        <div class="col-md-4">
+          <input type="text" class="form-control" placeholder="Name"
+                 [(ngModel)]="data.Name" name="name" required>
+        </div>
+
+        <!-- Email -->
+        <div class="col-md-4">
+          <input type="email" class="form-control" placeholder="Email"
+                 [(ngModel)]="data.Email" name="email" required>
+        </div>
+
+        <!-- Phone -->
+        <div class="col-md-4">
+          <input type="text" class="form-control" placeholder="Phone"
+                 [(ngModel)]="data.Phone" name="Phone" required>
+        </div>
+
+        <!-- Password -->
+        <div class="col-md-4">
+          <input type="password" class="form-control" placeholder="Password"
+                 [(ngModel)]="data.Password" name="Password" required>
+        </div>
+
+        <!-- Start Date -->
+        <div class="col-md-4">
+          <label for="StartDate" class="form-label fw-semibold">Start Date</label>
+          <input type="date" class="form-control"
+                 id="StartDate" [(ngModel)]="data.StartDate"
+                 name="StartDate" required>
+        </div>
+
+        <!-- End Date -->
+        <div class="col-md-4">
+          <label for="EndDate" class="form-label fw-semibold">End Date</label>
+          <input type="date" class="form-control"
+                 id="EndDate" [(ngModel)]="data.EndDate"
+                 name="EndDate" required>
+        </div>
+
+        <!-- Department -->
+        <div class="col-md-4">
+          <select name="Department" class="form-select" [(ngModel)]="data.DeptId" required>
+            <option value="0" selected>Select Department</option>
+            <option *ngFor="let depart of deptList" [value]="depart.Id">{{ depart.Name }}</option>
+          </select>
+        </div>
+
+        <!-- Role (only Admin) -->
+        <div class="col-md-4" *ngIf="roleName == 'Admin'">
+          <select name="Role" class="form-select" [(ngModel)]="data.RoleId" required>
+            <option value="0" selected>Select Role</option>
+            <option *ngFor="let role of roleList" [value]="role.Id">{{ role.Name }}</option>
+          </select>
+        </div>
+
+        <!-- Salary (only Admin) -->
+        <div class="col-md-4" *ngIf="roleName == 'Admin'">
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="SalaryCheck"
+                   [(ngModel)]="isSalaryEnabled" name="isSalaryEnabled">
+            <label class="form-check-label fw-semibold" for="SalaryCheck">
+              {{ data.Id ? "Update Salary" : "Add Custom Salary" }}
+            </label>
+          </div>
+
+          <input type="number" class="form-control"
+                 *ngIf="isSalaryEnabled"
+                 placeholder="Salary"
+                 [(ngModel)]="data.Salary"
+                 name="Salary">
+        </div>
+
+        <!-- Buttons -->
+        <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+          <button type="submit" class="btn btn-success px-4">
+            <i class="bi bi-save me-1"></i> Save
+          </button>
+          <button type="button" class="btn btn-secondary px-4" (click)="close()">
+            <i class="bi bi-x-circle me-1"></i> Cancel
+          </button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>

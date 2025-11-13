@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>{{ data.Id == 0 ? 'Add Department' : 'Edit Department' }}</h2>
+
+<mat-dialog-content>
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Department Name</mat-label>
+    <input matInput [(ngModel)]="data.Name" />
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()"  class="btn btn-danger m-1">Cancel</button>
+  <button mat-raised-button color="primary"  class="btn btn-primary m-1" (click)="save()">Save</button>
+</mat-dialog-actions>

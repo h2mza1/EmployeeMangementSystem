@@ -1,0 +1,183 @@
+<div class="container mt-5">
+  <!-- العنوان -->
+  <div class="text-center mb-4">
+    <h2 class="text-primary fw-bold">
+      <i class="bi bi-people-fill me-2"></i> Employees Dashboard
+    </h2>
+  </div>
+
+  <!-- زر إضافة موظف -->
+  <div class="d-flex justify-content-start mb-3">
+    <button class="btn btn-primary shadow-sm" (click)="openAddOrUpdate()">
+      <i class="bi bi-plus-lg me-1"></i> Add New Employee
+    </button>
+  </div>
+
+  <!-- 🔹 فلاتر البحث -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <div class="row g-3 align-items-end">
+
+        <!-- بحث بالاسم -->
+        <div class="col-md-3">
+          <label class="form-label fw-semibold text-secondary">
+            <i class="bi bi-search me-2"></i> Search Name
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Enter name..."
+            [(ngModel)]="searchName"
+            (input)="applyFilters()"
+          />
+        </div>
+
+        <!-- القسم -->
+        <div class="col-md-3">
+          <label class="form-label fw-semibold text-secondary">
+            <i class="bi bi-building me-2"></i> Department
+          </label>
+          <select
+            class="form-select"
+            [(ngModel)]="selectedDept"
+            (change)="applyFilters()"
+          >
+            <option value="">All Departments</option>
+            <option *ngFor="let dept of departments" [value]="dept">
+              {{ dept }}
+            </option>
+          </select>
+        </div>
+
+        <!-- الدور -->
+        <div class="col-md-3">
+          <label class="form-label fw-semibold text-secondary">
+            <i class="bi bi-person-badge me-2"></i> Role
+          </label>
+          <select
+            class="form-select"
+            [(ngModel)]="selectedRole"
+            (change)="applyFilters()"
+          >
+            <option value="">All Roles</option>
+            <option *ngFor="let role of roles" [value]="role">
+              {{ role }}
+            </option>
+          </select>
+        </div>
+
+        <!-- تاريخ البدء -->
+        <div class="col-md-2">
+          <label class="form-label fw-semibold text-secondary">
+            <i class="bi bi-calendar-date me-2"></i> Start Date
+          </label>
+          <input
+            type="date"
+            class="form-control"
+            [(ngModel)]="startDate"
+            (change)="applyFilters()"
+          />
+        </div>
+
+        <!-- زر تصفية -->
+        <div class="col-md-1 d-flex">
+          <button class="btn btn-outline-secondary w-100" (click)="resetFilters()">
+            <i class="bi bi-arrow-counterclockwise"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- جدول الموظفين -->
+  <div class="card shadow-lg border-0">
+    <div
+      class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+    >
+      <h5 class="mb-0">Employees List</h5>
+      <span *ngIf="empList && empList.length > 0"
+        ><strong>Total:</strong> {{ empList.length }}</span
+      >
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table
+          *ngIf="status; else noEmployees"
+          class="table table-striped table-hover table-borderless table-primary align-middle mb-0"
+        >
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Department</th>
+              <th>Role</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Salary</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody class="table-group-divider">
+            <tr
+              *ngFor="let emp of filteredList; let i = index"
+              class="table-primary"
+            >
+              <td>{{ i + 1 }}</td>
+              <td>{{ emp.Name }}</td>
+              <td>{{ emp.Email }}</td>
+              <td>{{ emp.Phone }}</td>
+              <td>{{ emp.DeptName }}</td>
+              <td>{{ emp.RoleName }}</td>
+              <td>{{ emp.StartDate | date : 'yyyy-MM-dd' }}</td>
+              <td>{{ emp.EndDate | date : 'yyyy-MM-dd' }}</td>
+              <td>
+                {{ emp.Salary | currency : 'JOD' : 'symbol' : '1.0-0' }}
+              </td>
+              <td class="text-center">
+                <button
+                  class="btn btn-sm btn-warning me-2"
+                  (click)="openAddOrUpdate(emp)"
+                >
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-danger"
+                  (click)="delete(emp.Id)"
+                >
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+
+          <tfoot class="table-secondary">
+            <tr>
+              <td colspan="9" class="text-end pe-4">
+                <strong>Total Employees: {{ filteredList.length }}</strong>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- لا يوجد موظفين -->
+  <ng-template #noEmployees>
+    <div class="text-center py-5 text-muted">
+      <i class="bi bi-person-x display-6 d-block mb-2"></i>
+      <h5>No employees found</h5>
+      <button
+        class="btn btn-outline-primary mt-3"
+        (click)="openAddOrUpdate()"
+      >
+        <i class="bi bi-plus-circle me-1"></i> Add your first employee
+      </button>
+    </div>
+  </ng-template>
+</div>

@@ -1,0 +1,8 @@
+<h1 mat-dialog-title>Delate Record</h1>
+<mat-dialog-content>
+    <h2 class="danger">Are you sure you want to delete this record? </h2>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button   class="btn btn-primary m-1" (click)="close()" >Cancel</button>
+  <button mat-raised-button color="primary"  class="btn btn-danger m-1" (click)="delete()" >Delete</button>
+</mat-dialog-actions>
