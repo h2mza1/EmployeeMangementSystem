@@ -10,10 +10,13 @@ namespace EmployeeApi.Models
     {
         public bool IsDeleted { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public Shared()
         {
             IsDeleted = false;
             CreatedAt = DateTime.Now;
+            DeletedAt = null;
+            
         }
     }
 }

@@ -17,13 +17,32 @@
         protected override void Seed(EmployeeApi.Data.EmpDbContext context)
         {
             //  This method will be called after migrating to the latest version.
-            context.Departments.AddOrUpdate(
-                d=>d.Id,
+            if (!context.Departments.Any())
+            
+                {
+                    context.Departments.AddOrUpdate(
+                d => d.Id,
                  new Department { Id = 1, Name = "IT" },
                 new Department { Id = 2, Name = "Eng" }
                 );
-        
-            context.Employees.AddOrUpdate(
+
+                    context.SaveChanges();
+                }
+                if (!context.Roles.Any())
+                {
+                    context.Roles.AddOrUpdate(
+                r => r.Id,
+                new Role { Id = 1, Name = "Admin" },
+                new Role { Id = 2, Name = "Manager" },
+                new Role { Id = 3, Name = "Employee" }
+
+
+                );
+                    context.SaveChanges();
+                }
+                if (!context.Employees.Any())
+                {
+                    context.Employees.AddOrUpdate(
                 e => e.Id,
                 new Employee
                 {
@@ -34,10 +53,14 @@
                 ,
                     StartDate = DateTime.Now,
                     EndDate = DateTime.Now,
-                    DeptId = 1,
+                    DeptId = 3,
                     Password = HashingService.HashPassword("hamza"),
-                    RoleId = 10
+                    RoleId = 1,
+
                 });
+                    context.SaveChanges();
+                }
+            
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method
             //  to avoid creating duplicate seed data.
         }

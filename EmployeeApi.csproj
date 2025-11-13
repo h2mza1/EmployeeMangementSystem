@@ -341,6 +341,10 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\HistoryController.cs" />
+    <Compile Include="Controllers\LeaveController.cs" />
+    <Compile Include="Controllers\SalaryController.cs" />
+    <Compile Include="Controllers\SharedController.cs" />
     <Compile Include="Controllers\AttendanceController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\DepartmentController.cs" />
@@ -376,20 +380,65 @@
     <Compile Include="Migrations\202510241913382_setUniqToEmail.Designer.cs">
       <DependentUpon>202510241913382_setUniqToEmail.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202510271330260_updateTypeOfTime.cs" />
+    <Compile Include="Migrations\202510271330260_updateTypeOfTime.Designer.cs">
+      <DependentUpon>202510271330260_updateTypeOfTime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510290125277_addSalaryTable.cs" />
+    <Compile Include="Migrations\202510290125277_addSalaryTable.Designer.cs">
+      <DependentUpon>202510290125277_addSalaryTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510290549409_addBaseSalaryToEmp.cs" />
+    <Compile Include="Migrations\202510290549409_addBaseSalaryToEmp.Designer.cs">
+      <DependentUpon>202510290549409_addBaseSalaryToEmp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510290657575_addStatus.cs" />
+    <Compile Include="Migrations\202510290657575_addStatus.Designer.cs">
+      <DependentUpon>202510290657575_addStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510291251538_editNetSalary.cs" />
+    <Compile Include="Migrations\202510291251538_editNetSalary.Designer.cs">
+      <DependentUpon>202510291251538_editNetSalary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511030625119_editSalaryTable.cs" />
+    <Compile Include="Migrations\202511030625119_editSalaryTable.Designer.cs">
+      <DependentUpon>202511030625119_editSalaryTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511042021534_addDeletedAtProp.cs" />
+    <Compile Include="Migrations\202511042021534_addDeletedAtProp.Designer.cs">
+      <DependentUpon>202511042021534_addDeletedAtProp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511090547241_convertPhoneToString.cs" />
+    <Compile Include="Migrations\202511090547241_convertPhoneToString.Designer.cs">
+      <DependentUpon>202511090547241_convertPhoneToString.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511100706413_addTableLeaveRequest.cs" />
+    <Compile Include="Migrations\202511100706413_addTableLeaveRequest.Designer.cs">
+      <DependentUpon>202511100706413_addTableLeaveRequest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Attendance.cs" />
     <Compile Include="Models\Department.cs" />
     <Compile Include="Models\Employee.cs" />
+    <Compile Include="Models\History.cs" />
+    <Compile Include="Models\LeaveRequest.cs" />
     <Compile Include="Models\Role.cs" />
+    <Compile Include="Models\Salary.cs" />
     <Compile Include="Models\Shared.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\HashingService.cs" />
     <Compile Include="Services\JwtService.cs" />
+    <Compile Include="Services\Mapping.cs" />
+    <Compile Include="Services\SalaryService.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\AttendDto.cs" />
     <Compile Include="ViewModels\DeptDto.cs" />
     <Compile Include="ViewModels\EmpDto.cs" />
+    <Compile Include="ViewModels\HistoryDto.cs" />
+    <Compile Include="ViewModels\LeaveRequestDto.cs" />
     <Compile Include="ViewModels\Login.cs" />
     <Compile Include="ViewModels\RoleDto.cs" />
+    <Compile Include="ViewModels\SalaryDto.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -428,6 +477,7 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\CollectionModelDescription.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
+    <Content Include=".gitignore.text" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -480,6 +530,33 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202510241913382_setUniqToEmail.resx">
       <DependentUpon>202510241913382_setUniqToEmail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510271330260_updateTypeOfTime.resx">
+      <DependentUpon>202510271330260_updateTypeOfTime.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510290125277_addSalaryTable.resx">
+      <DependentUpon>202510290125277_addSalaryTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510290549409_addBaseSalaryToEmp.resx">
+      <DependentUpon>202510290549409_addBaseSalaryToEmp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510290657575_addStatus.resx">
+      <DependentUpon>202510290657575_addStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510291251538_editNetSalary.resx">
+      <DependentUpon>202510291251538_editNetSalary.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511030625119_editSalaryTable.resx">
+      <DependentUpon>202511030625119_editSalaryTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511042021534_addDeletedAtProp.resx">
+      <DependentUpon>202511042021534_addDeletedAtProp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511090547241_convertPhoneToString.resx">
+      <DependentUpon>202511090547241_convertPhoneToString.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511100706413_addTableLeaveRequest.resx">
+      <DependentUpon>202511100706413_addTableLeaveRequest.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
