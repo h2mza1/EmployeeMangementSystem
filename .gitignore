@@ -1,0 +1,14 @@
+# Ignore Visual Studio cache and temp files
+.vs/
+bin/
+obj/
+
+# Ignore build and config files
+*.dll
+*.pdb
+*.cache
+
+# Ignore Angular build outputs
+employeesManagement/node_modules/
+employeesManagement/dist/
+employeesManagement/.angular/
