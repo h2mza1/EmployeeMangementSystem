@@ -53,6 +53,7 @@ namespace EmployeeApi.Data
         public DbSet<Attendance> Attendances { get; set; }
         public DbSet<Salary> Salaries { get; set; }
         public DbSet<LeaveRequest> LeaveRequests { get; set; }
+        public DbSet<Vacation> Vacations { get; set; }
 
         //public int CurrentUserId { get; set; } = 0;
 

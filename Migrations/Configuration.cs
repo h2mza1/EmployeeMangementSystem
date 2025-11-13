@@ -60,6 +60,13 @@
                 });
                     context.SaveChanges();
                 }
+                if(!context.Vacations.Any())
+            {
+                context.Vacations.AddOrUpdate(
+                    new Vacation { Id = 1 , Name = "sick leave", Duration = 14 },
+                    new Vacation { Id = 2, Name = "Legal leave", Duration = 14 }
+                    );
+            }
             
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method
             //  to avoid creating duplicate seed data.

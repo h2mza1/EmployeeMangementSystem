@@ -416,6 +416,10 @@
     <Compile Include="Migrations\202511100706413_addTableLeaveRequest.Designer.cs">
       <DependentUpon>202511100706413_addTableLeaveRequest.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202511131139403_addVacationTable.cs" />
+    <Compile Include="Migrations\202511131139403_addVacationTable.Designer.cs">
+      <DependentUpon>202511131139403_addVacationTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Attendance.cs" />
     <Compile Include="Models\Department.cs" />
@@ -425,6 +429,7 @@
     <Compile Include="Models\Role.cs" />
     <Compile Include="Models\Salary.cs" />
     <Compile Include="Models\Shared.cs" />
+    <Compile Include="Models\Vacation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\HashingService.cs" />
     <Compile Include="Services\JwtService.cs" />
@@ -557,6 +562,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202511100706413_addTableLeaveRequest.resx">
       <DependentUpon>202511100706413_addTableLeaveRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511131139403_addVacationTable.resx">
+      <DependentUpon>202511131139403_addVacationTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
