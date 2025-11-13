@@ -1,5 +1,6 @@
 ﻿using EmployeeApi.Data;
 using EmployeeApi.Models;
+using EmployeeApi.Services;
 using EmployeeApi.ViewModels;
 using Microsoft.Ajax.Utilities;
 using System;
@@ -8,13 +9,18 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.Remoting.Contexts;
 using System.Threading.Tasks;
 using System.Web.Http;
-using WebApplication1.Filters;
+using System.Web.Http.Cors;
+
 
 namespace EmployeeApi.Controllers
 {
-    [AllowCrossSiteJson]
+
+
+    [EnableCors(origins: "http://localhost:4200", headers: "*", methods: "*")]
+
     [Authorize]
     public class DepartmentController : ApiController
     {
@@ -23,41 +29,50 @@ namespace EmployeeApi.Controllers
         public DepartmentController() { context = new EmpDbContext(); }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,Manager")]
+       [Authorize(Roles = "Admin,Manager")]
         [Route("api/Department/GetAll")]
         public async Task<IHttpActionResult> getAll()
         {
-            var depts = await context.Departments
-                .AsNoTracking()
-                .Where(x => !x.IsDeleted)
-                .ToListAsync();
-            var result = depts.Select(d => new DeptDto
-            {
-                Id = d.Id,
-                Name = d.Name
-            });
-            return Ok(result);
+            var depts = await (from dept in context.Departments
+                               where (!dept.IsDeleted)
+                               select new DeptDto
+                               {
+                                   Id = dept.Id,
+                                   Name = dept.Name
+                               }).AsNoTracking()
+                               .ToListAsync();
+            if(!depts.Any())
+                return NotFound();
+         
+            return Ok(depts);
         }
         [HttpGet]
         [Authorize(Roles = "Admin,Manager")]
         [Route("api/Department/GetById/{id}")]
         public async Task<IHttpActionResult> GetById(int id)
-        {
-            var dept = await context.Departments
-                .AsNoTracking()
-                .Where (x => !x.IsDeleted && x.Id == id)
-                .FirstAsync();
+
+
+        {   //await context.Departments
+            //    .AsNoTracking()
+            //    .Where(x => !x.IsDeleted && x.Id == id)
+            //    .FirstOrDefaultAsync();
+            var dept = await (from d in context.Departments
+                              where (d.Id == id && !d.IsDeleted)
+                              select new DeptDto
+                              {
+                                  Id = d.Id,
+                                  Name = d.Name
+                              }).AsNoTracking()
+                              .ToListAsync();
+            
+
             if (dept == null)
                 return NotFound();
-            var result = new DeptDto
-            {
-                Id = id,
-                Name = dept.Name
-            };
-            return Ok(result);
+         
+            return Ok(dept);
         }
         [HttpPost]
-        [Authorize(Roles ="Admin")]
+       [Authorize(Roles ="Admin")]
         [Route("api/Department/Create")]
         public async Task<IHttpActionResult> Create([FromBody]DeptDto model)
         {
@@ -66,34 +81,45 @@ namespace EmployeeApi.Controllers
             var dept = new Department { Name = model.Name };
             context.Departments.Add(dept);
             await context.SaveChangesAsync();
-            return Ok(dept);
+            return Ok(Mapping.MapTo(dept));
 
         }
         [HttpDelete]
         [Route("api/Department/Delete/{id}")]
-        [Authorize(Roles = "Admin")]
+       [Authorize(Roles = "Admin")]
         public async Task<IHttpActionResult> Delete(int id)
         {
-            var dept = await context.Departments.SingleOrDefaultAsync(x => x.Id == id);
+            var dept = await (from d in context.Departments
+                              where (d.Id == id && !d.IsDeleted)
+                              select d).FirstOrDefaultAsync();
+                              
             if (dept == null)
                 return BadRequest($"Department with id : {id} not found" );
+            var check = await (from e in context.Employees
+                               where (e.DeptId == dept.Id)
+                               select e).AnyAsync();
+            if (check)
+                return BadRequest($"Department {dept.Name} has many employee");
             dept.IsDeleted= true;
             await context.SaveChangesAsync();
-            return Ok(dept);
+
+            return Ok(Mapping.MapTo(dept));
         }
         [HttpPut]
         [Route("api/Department/update/{id}")]
-        [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
         public async Task<IHttpActionResult> Update(int id,[FromBody] DeptDto model)
         {
             if (string.IsNullOrEmpty(model.Name))
                 return BadRequest();
-            var dept = await context.Departments.SingleOrDefaultAsync(x=> x.Id == id);
+            var dept = await (from d in context.Departments
+                              where (d.Id == id && !d.IsDeleted)
+                              select d).FirstOrDefaultAsync();
             if (dept == null)
                 return BadRequest($"Department with id : {id} not found");
             dept.Name = model.Name;
             await context.SaveChangesAsync();
-            return Ok(dept);
+            return Ok(Mapping.MapTo(dept));
         }
     }
 }

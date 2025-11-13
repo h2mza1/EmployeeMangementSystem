@@ -7,50 +7,110 @@ using EmployeeApi.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.UI.WebControls;
-using WebApplication1.Filters;
+using System.Web.Http.Cors;
 
 namespace EmployeeApi.Controllers
 {
-    [AllowCrossSiteJson]
-    //[Authorize(Roles ="Admin")]
+
+
+    [EnableCors(origins: "http://localhost:4200", headers: "*", methods: "*")]
+
     public class EmployeeController : ApiController
     {
         private readonly EmpDbContext empDbContext;
+        private int user = 0;
         public EmployeeController() {
             empDbContext = new EmpDbContext();
+            user = GetCurrentUserId();
         }
         [HttpGet]
+       
+         [Authorize(Roles="Manager,Admin")]
         [Route("api/Employee/GetAll")]
-        [Authorize(Roles="Admin,Manager")]
         public async Task<IHttpActionResult> GetAll()
         {
-            var emps = await empDbContext.Employees
-                .Where(e=>!e.IsDeleted)
-                .AsNoTracking()
-                .Include(e=> e.Department)
-                .ToListAsync();
+            var emps = new List<EmpDto>();
+            var result = IsAdmin();
+            if(result)
+            {
+             
+                var res = await (from emp in empDbContext.Employees
+                             join dept in empDbContext.Departments 
+                             on emp.DeptId equals dept.Id 
+                             join role in empDbContext.Roles
+                             on emp.RoleId equals role.Id
+                             where (emp.Id != user && !emp.IsDeleted) 
+                             select new EmpDto
+                             {
+                                Id= emp.Id,
+                                Name= emp.Name,
+                                Email=emp.Email,
+                                Phone=emp.Phone,
+                                DeptName= dept.Name , 
+                                Salary= emp.BaseSalary,
+                                DeptId = emp.DeptId,
+                                EndDate = emp.EndDate,
+                                StartDate = emp.StartDate,
+                                RoleId = emp.RoleId,
+                                RoleName=role.Name,
+                             }
+                          ).ToListAsync();
+
+                emps = res;
+            }
+            else
+            {
+                emps = await empDbContext.Employees
+             .Where(e => !e.IsDeleted && e.Id != user && e.Role.Name=="Employee")
+             .AsNoTracking()
+             .Select(emp => new EmpDto
+             {
+                 Id = emp.Id,
+                 Name = emp.Name,
+                 Email = emp.Email,
+                 Phone = emp.Phone,
+                 DeptName = emp.Department.Name,
+                 Salary = emp.BaseSalary,
+                 DeptId = emp.DeptId,
+                 EndDate = emp.EndDate,
+                 StartDate = emp.StartDate,
+                 RoleId = emp.RoleId,
+                 RoleName = emp.Role.Name,
+             })
+             .ToListAsync();
+                var res = await (from emp in empDbContext.Employees
+                                 join role in empDbContext.Roles
+                                 on emp.RoleId equals role.Id
+                                 join dept in empDbContext.Departments
+                                 on emp.DeptId equals dept.Id
+                                 where (!emp.IsDeleted && emp.Id != user && role.Name.ToLower() == "employee")
+                                 select new EmpDto
+                                 {
+                                     Id = emp.Id,
+                                     Name = emp.Name,
+                                     Email = emp.Email,
+                                     Phone = emp.Phone,
+                                     DeptName = dept.Name,
+                                     Salary = emp.BaseSalary,
+                                     DeptId = emp.DeptId,
+                                     EndDate = emp.EndDate,
+                                     StartDate = emp.StartDate,
+                                     RoleId = emp.RoleId,
+                                     RoleName = role.Name,
+                                 }).ToListAsync();
+                emps = res;
+                                 
+            }
+          
             if (!emps.Any())
                 return NotFound();
-            var employees = emps.Select(e=> new EmpDto
-            {
-                Id = e.Id,
-                DeptId = e.DeptId,
-                DeptName = e.Department.Name ?? "",
-                Email   = e.Email ?? "",
-                Name = e.Name ?? "",
-                Phone = e.Phone ,
-                RoleId = e.RoleId,
-                RoleName = e.Role.Name ?? "",
-                EndDate = e.EndDate,
-                StartDate = e.StartDate,
-
-            });
-            return Ok(employees);
+         
+            return Ok(emps);
         }
 
         [HttpGet]
@@ -60,41 +120,49 @@ namespace EmployeeApi.Controllers
         {
             if(IsAdmin() || IsManager())
             {
-                var employee = await empDbContext.Employees.FindAsync(id);
+                var employee = await (from emp in empDbContext.Employees
+                                      where (emp.Id == id && !emp.IsDeleted)
+                                      select new EmpDto
+                                      {
+                                          Id = emp.Id,
+                                          Name = emp.Name,
+                                          Email = emp.Email,
+                                          Phone = emp.Phone,
+                                          DeptName = emp.Department.Name,
+                                          Salary = emp.BaseSalary,
+                                          DeptId = emp.DeptId,
+                                          EndDate = emp.EndDate,
+                                          StartDate = emp.StartDate,
+                                          RoleId = emp.RoleId,
+                                          RoleName = emp.Role.Name,
+                                      }
+                                      ).FirstOrDefaultAsync();
                 if (employee == null) return NotFound();
-                var res = new EmpDto
-                {
-                    Id = employee.Id,
-                    Name = employee.Name,
-                    Phone = employee.Phone,
-                    RoleId = employee.RoleId,
-                    DeptId = employee.DeptId,
-                    Email = employee.Email,
-                    DeptName = employee.Department.Name,
-                    RoleName = employee.Role.Name,
-                    EndDate = employee.EndDate,
-                    StartDate = employee.StartDate,
-                };
-                return Ok(res);
+          
+                return Ok(employee);
             }
             else if(GetCurrentUserId()==id)
             {
-                var employee = await empDbContext.Employees.FindAsync(id);
+                var employee = await (from emp in empDbContext.Employees
+                                      where (emp.Id == id && !emp.IsDeleted)
+                                      select new EmpDto
+                                      {
+                                          Id = emp.Id,
+                                          Name = emp.Name,
+                                          Email = emp.Email,
+                                          Phone = emp.Phone,
+                                          DeptName = emp.Department.Name,
+                                          Salary = emp.BaseSalary,
+                                          DeptId = emp.DeptId,
+                                          EndDate = emp.EndDate,
+                                          StartDate = emp.StartDate,
+                                          RoleId = emp.RoleId,
+                                          RoleName = emp.Role.Name,
+                                      }
+                                      ).FirstOrDefaultAsync(); ;
                 if (employee == null) return NotFound();
-                var res = new EmpDto
-                {
-                    Id = employee.Id,
-                    Name = employee.Name,
-                    Phone = employee.Phone,
-                    RoleId = employee.RoleId,
-                    DeptId = employee.DeptId,
-                    Email = employee.Email,
-                    DeptName = employee.Department.Name,
-                    RoleName = employee.Role.Name,
-                    EndDate = employee.EndDate,
-                    StartDate = employee.StartDate,
-                };
-                return Ok(res);
+          ;
+                return Ok(employee);
             }
             else
             {
@@ -108,12 +176,16 @@ namespace EmployeeApi.Controllers
         [Authorize(Roles = "Admin,Manager")]
         public async Task<IHttpActionResult> Create( [FromBody] EmpDto model)
         {
-            if(!ModelState.IsValid)
+            //await empDbContext.Employees.AnyAsync(e => e.Email.ToLower() == model.Email.ToLower());
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var checkEmail = await empDbContext.Employees.AnyAsync(e => e.Email.ToLower() == model.Email.ToLower());
+            var checkEmail = await (from emp in empDbContext.Employees
+                                    where (!emp.IsDeleted && emp.Email.ToLower() == model.Email.ToLower())
+                                    select emp.Email
+                                    ).AnyAsync();
             if (checkEmail)
                 return BadRequest($"email {model.Email} already founded");
-            var emp = new Employee
+            var recored = new Employee
             {
                 Name = model.Name,
                 Email = model.Email,
@@ -124,11 +196,16 @@ namespace EmployeeApi.Controllers
                 StartDate = model.StartDate,
 
             };
-             var hash = HashingService.HashPassword(model.Password);
-            emp.Password = hash;
+            if (model.Salary != 0 )
+                recored.BaseSalary = model.Salary;
+            if(model.Password != null)
+            {
+                var hash = HashingService.HashPassword(model.Password);
+                recored.Password = hash;
+            }
             try
             {
-                empDbContext.Employees.Add(emp);
+                empDbContext.Employees.Add(recored);
                 await empDbContext.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -136,18 +213,29 @@ namespace EmployeeApi.Controllers
                 return BadRequest($"Error: {ex.Message}");
 
             }
+            var role = await empDbContext.Roles
+                .Where(x => x.Id == recored.RoleId)
+                .Select(x => x.Name)
+                .FirstOrDefaultAsync();
+
+            var dept = await empDbContext.Departments
+              .Where(x => x.Id == recored.DeptId)
+              .Select(x => x.Name)
+              .FirstOrDefaultAsync();
+
             var response = new EmpDto
             {
-                Id = emp.Id,
-                Name = emp.Name ?? "",
-                Email = emp.Email ?? "",
-                Phone = emp.Phone,
-                RoleId = emp.RoleId,
-                DeptId = emp.DeptId,
-                DeptName = emp.Department.Name ?? "",
-                RoleName = emp.Role.Name ?? "",
-                  EndDate = emp.EndDate,
-                StartDate = emp.StartDate,
+                Id = recored.Id,
+                Name = recored.Name ?? "",
+                Email = recored.Email ?? "",
+                Phone = recored.Phone,
+                RoleId = recored.RoleId,
+                DeptId = recored.DeptId,
+                DeptName = dept ?? "",
+                RoleName = role ?? "",
+                 EndDate = recored.EndDate,
+                StartDate = recored.StartDate,
+                Salary = recored.BaseSalary
 
             };
             return Ok(response);
@@ -163,77 +251,111 @@ namespace EmployeeApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var emp = await empDbContext.Employees.FirstOrDefaultAsync(e => e.Id == id);
-            if (emp == null)
+            var employee = await (from emp in empDbContext.Employees
+                             where emp.Id == id && !emp.IsDeleted
+                             select new  EmpDto
+                             {
+                              Id=   emp.Id,
+                                Name=  emp.Name,
+                                 Email= emp.Email,
+                                 Phone= emp.Phone,
+                                  Salary= emp.BaseSalary,
+                                  DeptId= emp.DeptId,
+                                  EndDate= emp.EndDate,
+                                StartDate=  emp.StartDate,
+                                RoleId= emp.RoleId,
+                                DeptName = emp.Department.Name,
+                                RoleName=emp.Role.Name
+                             }).FirstOrDefaultAsync();
+            if (employee == null)
                 return NotFound();
-            var checkEmail = await empDbContext.Employees
-                
-                .AnyAsync(e => e.Email.ToLower() == model.Email.ToLower() && e.Id !=id)
-                ;
+            var empres = Mapping.MapTo(employee);
+            var checkEmail = await (from emp in empDbContext.Employees
+                                    where (!emp.IsDeleted && emp.Email.ToLower() == model.Email.ToLower() && emp.Id != id)
+                                    
+                                    select emp.Email
+                                  )
+                                  
+                                  .AnyAsync();
             if (checkEmail)
                 return BadRequest($"email {model.Email} already founded");
-            emp.Email = model.Email;
-            emp.Phone = model.Phone;
-            emp.Name = model.Name;
+            empres.Email = model.Email;
+            empres.Phone = model.Phone;
+            empres.Name = model.Name;
            
             if(IsAdmin() || IsManager())
             {
-                emp.DeptId = model.DeptId;
-                emp.RoleId = model.RoleId;  
+                empres.DeptId = model.DeptId;
+              
 
             }
-            await empDbContext.SaveChangesAsync();
-            var response = new EmpDto
+            if (IsAdmin() )
             {
-                Id = emp.Id,
-                Name = emp.Name ?? "",
-                Email = emp.Email ?? "",
-                Phone = emp.Phone,
-                RoleId = emp.RoleId,
-                DeptId = emp.DeptId,
-                DeptName = emp.Department.Name ?? "",
-                RoleName = emp.Role.Name ?? ""
-
-
-            };
+                empres.RoleId = model.RoleId;
+                if(model.Salary != 0)
+                    empres.BaseSalary = model.Salary;
+                if (model.StartDate.ToString() != null)
+                    empres.StartDate = model.StartDate;
+                if (model.EndDate.ToString() != null)
+                    empres.EndDate = model.EndDate;
+                if (!string.IsNullOrEmpty(model.Password))
+                    try
+                    {
+                        var hash = HashingService.HashPassword(model.Password);
+                        empres.Password = hash;
+                    }
+                    catch (Exception ex) 
+                    {
+                        return BadRequest(ex.Message);
+                    }
+            }
+                
+            await empDbContext.SaveChangesAsync();
+             empDbContext.Employees.AddOrUpdate(empres);
+            var response = Mapping.MapTo(empres);
+            response.RoleName = employee.RoleName;
+            response.DeptName = employee.DeptName;
+            await empDbContext.SaveChangesAsync();
             return Ok(response);
         }
 
         [HttpDelete]
-        [Route("api/Employee/Delete")]
-        [Authorize(Roles = "Admin,Manager")]
+        [Route("api/Employee/Delete/{id}")]
+       [Authorize(Roles = "Admin,Manager")]
         public async Task<IHttpActionResult> Delete(int id)
         {
-            var emp = await empDbContext.Employees.FirstOrDefaultAsync(e => e.Id == id);
+            var emp = await (from e in empDbContext.Employees
+                             where (e.Id == id && !e.IsDeleted) 
+                             select e).FirstOrDefaultAsync();
             if (emp == null)
-                return NotFound();
+                return BadRequest($"No employee founded with id = {id}");
 
             emp.IsDeleted = true;
             await empDbContext.SaveChangesAsync();
             return Ok();
         }
-        private bool IsAdmin()
+        public bool IsAdmin()
         {
             var identity = User.Identity as ClaimsIdentity;
-            var role= identity.FindFirst(ClaimTypes.Role).Value;
-            if(role.ToLower() == "admin")
+            var role = identity.FindFirst(ClaimTypes.Role).Value;
+            if (role.ToLower() == "admin")
+                return true;
+            return false;
+        }           
+        public bool IsManager()
+        {
+            var identity = User.Identity as ClaimsIdentity;
+            var role = identity.FindFirst(ClaimTypes.Role).Value;
+            if (role.ToLower() == "manager")
                 return true;
             return false;
         }
-        private bool IsManager()
-        {
-            var identity = User.Identity as ClaimsIdentity;
-            var role= identity.FindFirst(ClaimTypes.Role).Value;
-            if(role.ToLower() == "manager")
-                return true;
-            return false;
-        }
-        private int GetCurrentUserId()
+        public int GetCurrentUserId()
         {
             var identity = User.Identity as ClaimsIdentity;
 
-            return int.Parse(identity.FindFirst(ClaimTypes.NameIdentifier).Value);
+            return int.Parse(identity.FindFirst(ClaimTypes.NameIdentifier).Value ?? "");
         }
-       
+
     }
 }

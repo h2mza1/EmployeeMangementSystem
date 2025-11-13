@@ -1,4 +1,5 @@
 ﻿using EmployeeApi.Data;
+using EmployeeApi.Models;
 using EmployeeApi.Services;
 using EmployeeApi.ViewModels;
 using System;
@@ -9,10 +10,13 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Cors;
+
 
 namespace EmployeeApi.Controllers
 {
-    public class AuthController : ApiController
+    [EnableCors(origins: "http://localhost:4200", headers: "*", methods: "*")]
+    public class AuthController : SharedController
     {   
         private readonly EmpDbContext context;
         public AuthController()
@@ -22,12 +26,13 @@ namespace EmployeeApi.Controllers
 
         [HttpPost]
         [Route("api/Auth/Login")]
+        [AllowAnonymous]
         public async Task<IHttpActionResult> Login(Login model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var user = await context.Employees.FirstOrDefaultAsync(x=> x.Email == model.Email);
-            if (user == null)
+            if (user == null)   
                 return BadRequest($"employee with email : {model.Email} not found");
             var result = false;
             try
@@ -43,10 +48,35 @@ namespace EmployeeApi.Controllers
             if (result)
             {
                 var token = JwtService.GenerateToken(user);
+                var existing = await context.Attendances
+                    .FirstOrDefaultAsync(a => a.EmployeeId == user.Id && a.Date == DateTime.Today && !a.IsDeleted);
+
+                if (existing == null)
+                {
+                    var attendance = new Attendance
+                    {
+                        EmployeeId = user.Id,
+                        Date = DateTime.Today,
+                        CheckInTime = DateTime.Now,
+                        Status = true,
+                    };
+                    context.Attendances.Add(attendance);
+                    await context.SaveChangesAsync();
+                }
+               
                 return Ok(new {success = "true",data=token});
 
             }
-            return Ok("invild login");
+            return BadRequest("invalid login");
+        }   
+
+        [HttpGet]
+        [Route("api/Auth/IsAdmin")]
+        [Authorize]
+        public IHttpActionResult IsUserAdmin()
+        {
+            return Ok(IsAdmin());
         }
+
     }
 }

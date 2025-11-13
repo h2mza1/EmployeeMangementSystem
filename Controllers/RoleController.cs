@@ -9,12 +9,15 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Cors;
+
 
 namespace EmployeeApi.Controllers
 {
     [Authorize(Roles = "Admin")]
 
-    public class RoleController : ApiController
+    [AllowAnonymous]
+    public class RoleController : SharedController
     {
         private readonly EmpDbContext context;
         public RoleController() { context = new EmpDbContext(); }
@@ -126,6 +129,21 @@ namespace EmployeeApi.Controllers
                 return BadRequest($"Error: {ex.Message}");
             }
         }
-        
+        [HttpGet]
+        [Route("api/Role/getUserRole")]
+        [Authorize]
+        public  async Task<IHttpActionResult> GetUserRole()
+        {
+            var userId = GetCurrentUserId();
+            if (userId == 0)
+                return Unauthorized();
+            var user = await context.Employees
+                .FirstOrDefaultAsync(p => p.Id == userId);
+            if (user == null) return NotFound();
+            var role = user.Role.Name;
+            return Ok(role);
+        }
+
+
     }
 }
