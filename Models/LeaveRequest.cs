@@ -7,12 +7,7 @@ using System.Threading.Tasks;
 
 namespace EmployeeApi.Models
 {
-    public enum RequestType
-    {
-        Annual,
-        Sick,
-      
-    }
+
 
     public enum RequestStatus
     {
@@ -23,7 +18,9 @@ namespace EmployeeApi.Models
     public class LeaveRequest  :Shared
     {
         public int Id { get; set; }
-        public RequestType Type { get; set; } 
+        [ForeignKey("Vacation")]
+        public int VacationId { get; set; } 
+        public virtual Vacation Vacation { get; set; }
         public RequestStatus Status { get; set; } = RequestStatus.Pending;
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }

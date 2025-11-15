@@ -420,6 +420,10 @@
     <Compile Include="Migrations\202511131139403_addVacationTable.Designer.cs">
       <DependentUpon>202511131139403_addVacationTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202511141938576_addVactionITtableLeave.cs" />
+    <Compile Include="Migrations\202511141938576_addVactionITtableLeave.Designer.cs">
+      <DependentUpon>202511141938576_addVactionITtableLeave.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Attendance.cs" />
     <Compile Include="Models\Department.cs" />
@@ -444,6 +448,7 @@
     <Compile Include="ViewModels\Login.cs" />
     <Compile Include="ViewModels\RoleDto.cs" />
     <Compile Include="ViewModels\SalaryDto.cs" />
+    <Compile Include="ViewModels\VacationDto.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -565,6 +570,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202511131139403_addVacationTable.resx">
       <DependentUpon>202511131139403_addVacationTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511141938576_addVactionITtableLeave.resx">
+      <DependentUpon>202511141938576_addVactionITtableLeave.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

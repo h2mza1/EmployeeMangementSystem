@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Leave } from '../Models/leave';
 import { environment } from 'src/environments/environment';
+import { Vacation } from '../Models/vacation';
 
 @Injectable({
   providedIn: 'root'
@@ -29,5 +30,9 @@ export class LeaveService {
   request(model:Leave):Observable<Leave>
   {
     return this.context.post<Leave>(`${environment.baseUrl}/Leave/Add`,model)
+  }
+  getVacations():Observable<Vacation[]>
+  {
+    return this.context.get<Vacation[]>(`${environment.baseUrl}/Vacation/GetAll`)
   }
 }

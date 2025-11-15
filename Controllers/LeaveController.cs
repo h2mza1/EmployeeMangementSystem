@@ -30,7 +30,7 @@ namespace EmployeeApi.Controllers
                 Id = record.Id,
                 EmployeeId = record.EmployeeId,
                 EmployeeName = record?.Employee?.Name ?? "",
-                Type = record.Type.ToString(),
+                Type = record?.Vacation.Name ?? "",
                 Status = record.Status.ToString(),
                 StartDate = record.StartDate,
                 EndDate = record.EndDate,
@@ -38,7 +38,8 @@ namespace EmployeeApi.Controllers
                 ToTime = record.ToTime,
                 Reason = record.Reason,
                 ApprovedByName = approvedByName ?? "",
-                CreatedAt = record.CreatedAt
+                CreatedAt = record.CreatedAt,
+                VacationId = record.VacationId,
             };
         }
 
@@ -58,19 +59,19 @@ namespace EmployeeApi.Controllers
             var leave = new LeaveRequest
             {
                 EmployeeId = model.EmployeeId,
-                Type = (RequestType)Enum.Parse(typeof(RequestType), model.Type),
                 Status = RequestStatus.Pending,
                 StartDate = model.StartDate,
                 EndDate = model.EndDate,
                 FromTime = model.FromTime,
                 ToTime = model.ToTime,
                 Reason = model.Reason,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.Now,
+                VacationId = model.VacationId,
             };
 
             context.LeaveRequests.Add(leave);
             await context.SaveChangesAsync();
-            return Ok(await MapToDto(leave));
+            return Ok();
         }
 
         [HttpGet]
@@ -161,8 +162,9 @@ namespace EmployeeApi.Controllers
             record.FromTime = model.FromTime;
             record.ToTime = model.ToTime;
             record.Reason = model.Reason;
-            record.Type = (RequestType)Enum.Parse(typeof(RequestType), model.Type);
+            //record.Type =  model.;
             record.Status = (RequestStatus)Enum.Parse(typeof(RequestStatus), model.Status);
+            record.VacationId = model.VacationId;
 
             await context.SaveChangesAsync();
 
@@ -185,6 +187,24 @@ namespace EmployeeApi.Controllers
                 result.Add(await MapToDto(r));
 
             return Ok(result);
+        }
+        //Vacation
+        [HttpGet]
+        [Route("api/Vacation/GetAll")]
+        public async Task<IHttpActionResult> GetAllVacations()
+        {
+            var records = await context.Vacations.ToListAsync();
+            if(records.Any())
+            {
+                var result = records.Select(x => new VacationDto
+                {
+                    Duration = x.Duration,
+                    Id = x.Id,
+                    Name = x.Name,
+                });
+                return Ok(result);
+            }
+            return Ok(new List<VacationDto>()); 
         }
     }
 }

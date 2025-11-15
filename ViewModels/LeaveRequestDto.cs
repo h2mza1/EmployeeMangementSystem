@@ -23,6 +23,7 @@ namespace EmployeeApi.ViewModels
         public DateTime? ToTime { get; set; }
         [Required(ErrorMessage = "The Reason is required")]
         public string Reason { get; set; }
+        public int VacationId { get; set; }
         public string ApprovedByName { get; set; }
         public DateTime CreatedAt { get; set; }
     }

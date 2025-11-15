@@ -17,16 +17,16 @@
   <!-- Employee ID (hidden) -->
   <input type="hidden" formControlName="EmployeeId">
 
-  <!-- Request Type -->
-  <div class="mb-3">
-    <label class="form-label fw-semibold">Request Type</label>
-    <select class="form-select rounded-3 shadow-sm" formControlName="Type" (change)="onTypeChange($event)">
-      <option [value]="RequestType.Annual">Annual</option>
-      <option [value]="RequestType.Sick">Sick </option>
-      <option [value]="RequestType.Annual">Annual Leave</option>
-      <option [value]="RequestType.Sick">Sick Leave</option>
-    </select>
-  </div>
+<div class="mb-3">
+  <label class="form-label fw-semibold">Request Type</label>
+  <select class="form-select rounded-3 shadow-sm" formControlName="VacationId" (change)="onTypeChange($event)">
+    <option [ngValue]="null" disabled selected>select type of leave</option>
+    <option *ngFor="let vac of vacationList" [ngValue]="vac.Id">
+      {{ vac.Name }}
+    </option>
+  </select>
+</div>
+
 
   <!-- Permission Fields -->
   <div class="row g-3" *ngIf="type == RequestType.Annual; else leaveTemplate">

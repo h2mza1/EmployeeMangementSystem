@@ -36,7 +36,10 @@ namespace EmployeeApi.Controllers
 
             var (baseSalary, deduction, netSalary, presentHours, absentHours) =
                 await CalculateSalaryAsync(model.EmployeeId, model.Month, model.Year);
+            var hasPaidLeave =absentHours > 0 && deduction == 0;
 
+            if (presentHours == 0 && !hasPaidLeave)
+                return BadRequest("Employee has no attendance or paid leave records for this month.");
             if (presentHours == 0)
                 return BadRequest("Employee has no attendance records for this month.");
 
@@ -48,7 +51,7 @@ namespace EmployeeApi.Controllers
                 existingSalary.BaseSalary = baseSalary;
                 existingSalary.Deduction = deduction;
                 existingSalary.NetSalary = netSalary;
-
+                existingSalary.IsDeleted = false;
                 _context.Entry(existingSalary).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
@@ -128,8 +131,9 @@ namespace EmployeeApi.Controllers
             {
                 var (baseSalary, deduction, netSalary, presentHours, absentHours) =
                     await CalculateSalaryAsync(emp.Id, month, year);
+                var hasPaidLeave =absentHours > 0 && deduction == 0;
 
-                if (presentHours == 0) continue;
+                if (presentHours == 0 && !hasPaidLeave) continue;
 
                 var existingSalary = await _context.Salaries
                     .FirstOrDefaultAsync(s => s.EmployeeId == emp.Id && s.Month == month && s.Year == year);
@@ -139,6 +143,8 @@ namespace EmployeeApi.Controllers
                     existingSalary.BaseSalary = baseSalary;
                     existingSalary.Deduction = deduction;
                     existingSalary.NetSalary = netSalary;
+                    existingSalary.IsDeleted = false;
+
                     _context.Entry(existingSalary).State = EntityState.Modified;
                 }
                 else
@@ -366,16 +372,33 @@ namespace EmployeeApi.Controllers
                 return Ok(result);
             }
         }
+
+        private int CalculateLeaveHours(LeaveRequest l)
+        {
+            // لو الإجازة بالساعات
+            if (l.FromTime.HasValue && l.ToTime.HasValue)
+            {
+                return (int)(l.ToTime.Value - l.FromTime.Value).TotalHours;
+            }
+
+            // لو بالأيام
+            DateTime end = l.EndDate ?? l.StartDate;
+            int days = (int)(end - l.StartDate).TotalDays + 1;
+
+            return days * 8; // يوم = 8 ساعات
+        }
+
         private async Task<(decimal baseSalary, decimal deduction, decimal netSalary, int totalWorkHours, int totalAbsentHours)>
-            CalculateSalaryAsync(int employeeId, int month, int year)
+       CalculateSalaryAsync(int employeeId, int month, int year)
         {
             var monthStart = new DateTime(year, month, 1);
             var nextMonth = monthStart.AddMonths(1);
 
-            // 🗓️ إنشاء جميع أيام الشهر (باستثناء الجمعة والسبت)
+            // جميع أيام الشهر
             var allDays = Enumerable.Range(0, (nextMonth - monthStart).Days)
                                     .Select(offset => monthStart.AddDays(offset));
 
+            // أيام العمل (الأحد - الخميس)
             var workingDays = allDays.Where(d => d.DayOfWeek != DayOfWeek.Friday &&
                                                  d.DayOfWeek != DayOfWeek.Saturday)
                                      .ToList();
@@ -384,13 +407,7 @@ namespace EmployeeApi.Controllers
             const int hoursPerDay = 8;
             int expectedWorkHours = totalWorkingDays * hoursPerDay;
 
-            // 🕒 جلب السجلات من جدول الحضور
-            //  var attendances = await _context.Attendances
-            //.Where(a => a.EmployeeId == employeeId &&
-            //            a.Date  >= monthStart &&
-            //            a.Date < nextMonth &&
-            //            !a.IsDeleted)
-            //.ToListAsync();
+            // الحضور
             var attendances = await _context.Attendances
                 .Where(a => a.EmployeeId == employeeId &&
                             a.Status == true &&
@@ -400,44 +417,68 @@ namespace EmployeeApi.Controllers
                             a.CheckInTime.Value >= monthStart &&
                             a.CheckInTime.Value < nextMonth)
                 .ToListAsync();
+
+            // مجموع ساعات الدوام
             int totalWorkHours = 0;
             foreach (var att in attendances)
             {
-                if (att.Status && att.CheckInTime.HasValue && att.CheckOutTime.HasValue)
-                {
-                    var diff = att.CheckOutTime.Value - att.CheckInTime.Value;
-                    totalWorkHours += (int)diff.TotalHours;
-                }
+                var diff = att.CheckOutTime.Value - att.CheckInTime.Value;
+                totalWorkHours += (int)diff.TotalHours;
             }
 
             int totalAbsentHours = expectedWorkHours - totalWorkHours;
             if (totalAbsentHours < 0) totalAbsentHours = 0;
 
-            // 🧾 الإجازات المعتمدة
+            // ------------------------------------------------------------------
+            //       حساب الإجازات المدفوعة (legal + sick) بالساعات
+            // ------------------------------------------------------------------
+
+            // 14 يوم = 112 ساعة
+            int legalBalance = 14 * 8;
+            int sickBalance = 14 * 8;
+
+            // تعريف الإجازات
+            var legalVac = await _context.Vacations.FirstOrDefaultAsync(x => x.Name.ToLower() == "legal leave");
+            var sickVac = await _context.Vacations.FirstOrDefaultAsync(x => x.Name.ToLower() == "sick leave");
+
+            // الإجازات الموافق عليها خلال نفس السنة
             var approvedLeaves = await _context.LeaveRequests
                 .Where(l => l.EmployeeId == employeeId &&
                             l.Status == RequestStatus.Approved &&
                             !l.IsDeleted &&
-                            l.StartDate < nextMonth &&
-                            (l.EndDate ?? l.StartDate) >= monthStart) // ✅ حماية من null
+                            l.StartDate.Year == year)
                 .ToListAsync();
 
-            int paidLeaveDays = approvedLeaves
-                .Where(l => l.Type == RequestType.Annual)
-                .Sum(l => (int)(((l.EndDate ?? l.StartDate) - l.StartDate).TotalDays + 1));
+            int usedLegalHours = 0;
+            int usedSickHours = 0;
 
-            int sickLeaveDays = approvedLeaves
-                .Where(l => l.Type == RequestType.Sick)
-                .Sum(l => (int)(((l.EndDate ?? l.StartDate) - l.StartDate).TotalDays + 1));
+            foreach (var l in approvedLeaves)
+            {
+                int hours = CalculateLeaveHours(l);
 
-            paidLeaveDays = Math.Min(paidLeaveDays, 14);
-            sickLeaveDays = Math.Min(sickLeaveDays, 14);
+                if (legalVac != null && l.VacationId == legalVac.Id)
+                    usedLegalHours += hours;
 
-            int totalAbsentHoursAdjusted = totalAbsentHours - (paidLeaveDays + sickLeaveDays) * hoursPerDay;
+                if (sickVac != null && l.VacationId == sickVac.Id)
+                    usedSickHours += hours;
+            }
+
+            // الحد الأعلى لكل نوع (112 ساعة)
+            usedLegalHours = Math.Min(usedLegalHours, legalBalance);
+            usedSickHours = Math.Min(usedSickHours, sickBalance);
+
+            int paidLeaveHours = usedLegalHours + usedSickHours;
+
+            // طرح الإجازات المدفوعة من الغياب
+            int totalAbsentHoursAdjusted = totalAbsentHours - paidLeaveHours;
             if (totalAbsentHoursAdjusted < 0) totalAbsentHoursAdjusted = 0;
 
+            // ------------------------------------------------------------------
+            //                    حساب الراتب والخصومات
+            // ------------------------------------------------------------------
+
             var baseSalary = await _context.Employees
-                .Where(e => e.Id == employeeId)
+                .Where(e => e.Id == employeeId && !e.IsDeleted)
                 .Select(e => e.BaseSalary)
                 .FirstOrDefaultAsync();
 
@@ -447,6 +488,7 @@ namespace EmployeeApi.Controllers
 
             return (baseSalary, deduction, netSalary, totalWorkHours, totalAbsentHours);
         }
+
 
     }
 }

@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EmployeeApi.Models
+namespace EmployeeApi.ViewModels
 {
-    public class Vacation
+    public class VacationDto
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Name { get; set; }
         public int Duration { get; set; }
     }

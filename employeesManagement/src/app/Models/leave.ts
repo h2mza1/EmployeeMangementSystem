@@ -9,5 +9,6 @@ export interface Leave {
     FromTime : Date | null,
     ToTime : Date | null,
     Reason : string | null,
-    ApprovedByName : string | null
+    ApprovedByName : string | null,
+    VacationId : number
 }

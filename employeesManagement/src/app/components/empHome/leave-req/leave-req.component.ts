@@ -7,6 +7,7 @@ import { Leave } from 'src/app/Models/leave';
 import { EmployeeService } from 'src/app/Services/employee.service';
 import { LeaveService } from 'src/app/Services/leave.service';
 import { error, log } from 'console';
+import { Vacation } from 'src/app/Models/vacation';
 
 
 export enum RequestType {
@@ -25,8 +26,10 @@ export class LeaveReqComponent implements OnInit {
   type:RequestType=RequestType.Annual
     RequestType = RequestType;
     date:Date=new Date
+    vacationList:Vacation[]=[]
   constructor(
     private leaveService: LeaveService,
+    
     @Optional() private dialogRef?: MatDialogRef<LeaveReqComponent>,
     @Inject(MAT_DIALOG_DATA) public data?: {id:number , name:string}
   ) {
@@ -34,7 +37,7 @@ export class LeaveReqComponent implements OnInit {
       Id: new FormControl(0),
       EmployeeName: new FormControl(data?.name, [Validators.required],),
       EmployeeId: new FormControl(data?.id, [Validators.required]),
-      Type: new FormControl(RequestType.Annual, [Validators.required]), 
+      VacationId: new FormControl(0, [Validators.required]), 
       StartDate: new FormControl(new Date(), []),
       EndDate: new FormControl(""),
       FromTime: new FormControl(""),
@@ -53,7 +56,18 @@ onTypeChange(event: any) {
   }
 }
 
-  ngOnInit(): void {}
+  ngOnInit(): void 
+  {
+    this.leaveService.getVacations()
+    .subscribe(
+      {
+        next:(res)=>
+        {
+          this.vacationList=res
+        }
+      }
+    )
+  }
   send() {
     if(this.reqForm.valid)  
     {
