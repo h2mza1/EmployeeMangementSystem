@@ -78,12 +78,13 @@ export class HomeComponent implements OnInit {
     submitRequest() {
     const dialogRef = this.dialog.open(LeaveReqComponent,
       {
-        width:"600px",
+         width:"auto",
         data:{id:this.user.Id , name:this.user.Name},
         
       },
       
     )
+ 
     };
 
     // this.leaveService.addLeave(payload).subscribe({

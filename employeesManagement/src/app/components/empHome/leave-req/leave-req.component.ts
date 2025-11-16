@@ -27,7 +27,10 @@ export class LeaveReqComponent implements OnInit {
     RequestType = RequestType;
     date:Date=new Date
     vacationList:Vacation[]=[]
-  constructor(
+    leave:boolean=false
+ today = new Date();
+ formatted = this.today.toISOString().split('T')[0];
+    constructor(
     private leaveService: LeaveService,
     
     @Optional() private dialogRef?: MatDialogRef<LeaveReqComponent>,
@@ -37,16 +40,18 @@ export class LeaveReqComponent implements OnInit {
       Id: new FormControl(0),
       EmployeeName: new FormControl(data?.name, [Validators.required],),
       EmployeeId: new FormControl(data?.id, [Validators.required]),
-      VacationId: new FormControl(0, [Validators.required]), 
-      StartDate: new FormControl(new Date(), []),
+      VacationId: new FormControl('', [Validators.required]), 
+      StartDate: new FormControl(new Date(this.formatted),[Validators.required]),
       EndDate: new FormControl(""),
       FromTime: new FormControl(""),
       ToTime: new FormControl(""),
       Reason: new FormControl('', [Validators.required]),
+      IsLeave:new FormControl(false)
     });
   }
+
 onTypeChange(event: any) {
-  this.type = +event.target.value; // + لتحويل string إلى number
+  this.type = +event.target.value;
   if (this.type === this.RequestType.Annual) {
     this.reqForm.get('FromTime')?.reset();
     this.reqForm.get('ToTime')?.reset();
@@ -55,7 +60,6 @@ onTypeChange(event: any) {
     this.reqForm.get('EndDate')?.reset();
   }
 }
-
   ngOnInit(): void 
   {
     this.leaveService.getVacations()
@@ -64,9 +68,13 @@ onTypeChange(event: any) {
         next:(res)=>
         {
           this.vacationList=res
+          this.dialogRef?.close(true)
         }
       }
     )
+        setTimeout(()=> {
+      this.reqForm.patchValue({ StartDate: this.formatted });
+    }, 0);
   }
   send() {
     if(this.reqForm.valid)  
