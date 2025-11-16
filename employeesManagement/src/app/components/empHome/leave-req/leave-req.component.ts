@@ -68,7 +68,6 @@ onTypeChange(event: any) {
         next:(res)=>
         {
           this.vacationList=res
-          this.dialogRef?.close(true)
         }
       }
     )
@@ -86,7 +85,7 @@ onTypeChange(event: any) {
         {
           next:(res)=>
           {
-            console.log(res)
+          this.dialogRef?.close(true)
           },
           error:(err)=>
           {

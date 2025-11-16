@@ -7,7 +7,13 @@ import { LeaveReqComponent } from '../leave-req/leave-req.component';
 import { style } from '@angular/animations';
 import { NgStyle } from '@angular/common';
 import { AttendService } from 'src/app/Services/attend.service';
-
+import { Leave } from 'src/app/Models/leave';
+import { LeaveService } from 'src/app/Services/leave.service';
+export enum RequestStatus {
+  Pinding = 1,
+  Reject = 2,
+  Approved = 3,
+}
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -18,12 +24,15 @@ export class HomeComponent implements OnInit {
   id: number = 0;
   absentDayCount:number=0
    presentDayCount:number=0
+   requests: Leave[] = [];
+
 
     request = { Type: 'Leave', StartDate: '', EndDate: '', Reason: '' };
   constructor(
     private empService: EmployeeService,
     private authService: AuthService,
     private attendService:AttendService,
+    private leaveService:LeaveService,
     private dialog:MatDialog
   ) {
 
@@ -48,6 +57,13 @@ export class HomeComponent implements OnInit {
           this.empService.getById(this.id).subscribe({
             next: (res) => {
               this.user = res;
+                  this.leaveService.getRequestsByUserId(this.user.Id).subscribe({
+    next: (res) => {
+      this.requests = res;
+      console.log(res);
+    },
+    error: (err) => console.log(err)
+  });
             },
           });
         }
@@ -57,6 +73,7 @@ export class HomeComponent implements OnInit {
         console.log(err)
       }
     });
+ 
   }
    calculateAbsentDays(presentDays: number): number {
   const today = new Date();

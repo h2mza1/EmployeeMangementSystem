@@ -35,4 +35,8 @@ export class LeaveService {
   {
     return this.context.get<Vacation[]>(`${environment.baseUrl}/Vacation/GetAll`)
   }
+  getRequestsByUserId(id: number) {
+  return this.context.get<Leave[]>(`${environment.baseUrl}/Leave/getRequestsByUserId/${id}`);
+}
+
 }
