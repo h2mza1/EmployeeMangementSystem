@@ -27,7 +27,9 @@ export class EntryComponent implements OnInit {
     IsDeleted:false,
     RoleId:0,
     RoleName:"",
-    Salary:0
+    Salary:0,
+    expectedWorkHours:0,
+    workingHours:0
   };
   isSalaryEnabled = false; 
     deptList: Department[] = [];
@@ -111,7 +113,9 @@ export class EntryComponent implements OnInit {
       IsDeleted: false,
       RoleId : 3,
       RoleName:"",
-      Salary:0
+      Salary:0,
+      expectedWorkHours:0,
+      workingHours :0
     };
   }
   loadEmployees() {

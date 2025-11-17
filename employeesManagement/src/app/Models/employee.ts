@@ -11,5 +11,7 @@ export interface Employee {
     IsDeleted:boolean,
     RoleId:number,
     RoleName:string,
-    Salary : number
+    Salary : number,
+    expectedWorkHours : number ,
+    workingHours : number 
 }

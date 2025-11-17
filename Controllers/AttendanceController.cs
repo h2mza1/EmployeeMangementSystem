@@ -440,7 +440,7 @@ namespace EmployeeApi.Controllers
             var today = DateTime.Now;
 
             bool result = await context.Attendances
-          .AnyAsync(a => a.EmployeeId == userId && DbFunctions.TruncateTime(a.CheckOutTime) == DbFunctions.TruncateTime(today) && !a.IsDeleted);
+          .AnyAsync(a => a.EmployeeId == userId && DbFunctions.TruncateTime(a.CheckInTime) == DbFunctions.TruncateTime(today) && !a.IsDeleted && DbFunctions.TruncateTime(a.CheckOutTime) == DbFunctions.TruncateTime(today));
 
             return Ok(result);
         }

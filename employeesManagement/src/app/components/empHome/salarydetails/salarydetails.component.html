@@ -1,0 +1,57 @@
+<div class="container py-5">
+
+  <div class="text-center mb-4">
+    <h3 class="fw-bold">Salary Details</h3>
+    <p class="text-muted">Detailed breakdown of your salary</p>
+  </div>
+
+  <div class="table-responsive shadow-lg rounded-4" *ngFor="let sal of salList">
+    
+    <table class="table table-bordered table-striped align-middle text-center rounded-4 overflow-hidden">
+
+      <thead class="table-primary">
+        <tr>
+          <th colspan="12" class="fs-5">Employee Salary Report</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr class="fw-semibold bg-light">
+          <td>Name</td>
+          <td>Department</td>
+          <td>Month</td>
+          <td>Year</td>
+          <td>Base Salary</td>
+          <td>Deduction</td>
+          <td>Absent Hours</td>
+          <td>Work Hours</td>
+          <td>Present Days</td>
+          <td>Net Salary</td>
+        </tr>
+
+        <tr>
+          <td>{{sal.EmployeeName}}</td>
+          <td>{{sal.DeptName}}</td>
+          <td>{{sal.Month}}</td>
+          <td>{{sal.Year}}</td>
+          <td class="text-success fw-bold">{{sal.BaseSalary}}</td>
+          <td class="text-danger fw-bold">{{sal.Deduction}}</td>
+          <td class="text-warning fw-bold">{{sal.TotalAbsentHours}}</td>
+          <td class="text-info fw-bold">{{sal.TotalWorkHours}}</td>
+          <td class="fw-bold">{{sal.PresenttDays}}</td>
+          <td class="text-primary fw-bold">{{sal.NetSalary}}</td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    <div class="text-center mb-4">
+      <button class="btn btn-outline-primary px-4">
+        <i class="bi bi-download me-2"></i>Download Payslip
+      </button>
+    </div>
+
+  </div>
+
+</div>

@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { env } from 'process';
 import { basename } from 'path';
 import { __param } from 'tslib';
+import { SalaryDetail } from '../Models/salary-detail';
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +48,10 @@ export class SalaryService {
   return this.context.get<Salary[]>(
     `${environment.baseUrl}/EmpSal/GetSalaryByUserAndDate?id=${id}&date=${date}`
   );
+}
+getSalaryDetails(id:number):Observable<SalaryDetail[]>
+{
+  return this.context.get<SalaryDetail[]>(`${environment.baseUrl}/EmpSal/GetSalaryDetails/${id}`)
 }
 
 }
