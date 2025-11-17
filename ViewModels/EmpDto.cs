@@ -25,7 +25,10 @@ namespace EmployeeApi.ViewModels
         [Column(TypeName = "decimal")]
 
         public decimal Salary { get; set; }
-       
+        public int workingHours { get; set; } = 0;
+        public int expectedWorkHours { get; set; } = 0;
+
+
 
     }
 }

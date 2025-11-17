@@ -447,6 +447,7 @@
     <Compile Include="ViewModels\LeaveRequestDto.cs" />
     <Compile Include="ViewModels\Login.cs" />
     <Compile Include="ViewModels\RoleDto.cs" />
+    <Compile Include="ViewModels\SalaryDetail.cs" />
     <Compile Include="ViewModels\SalaryDto.cs" />
     <Compile Include="ViewModels\VacationDto.cs" />
   </ItemGroup>

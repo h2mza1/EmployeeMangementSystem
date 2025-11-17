@@ -14,16 +14,20 @@ using System.Web.Http.Cors;
 
 
 namespace EmployeeApi.Controllers
-{
+{   
     [EnableCors(origins: "http://localhost:4200", headers: "*", methods: "*")]
     public class AuthController : SharedController
-    {   
+    {
+        private TimeSpan startTime;
+        private TimeSpan endTime;
         private readonly EmpDbContext context;
         public AuthController()
         {
             context = new EmpDbContext();
+            startTime = new TimeSpan(8,0,0);//AM
+            endTime = new TimeSpan(17,0,0);//PM
         }
-
+            
         [HttpPost]
         [Route("api/Auth/Login")]
         [AllowAnonymous]
@@ -53,6 +57,10 @@ namespace EmployeeApi.Controllers
 
                 if (existing == null)
                 {
+                    var nowTime = DateTime.Now.TimeOfDay;
+
+                    if (nowTime < startTime || nowTime > endTime)
+                        return Ok(new { success = "true", data = token });
                     var attendance = new Attendance
                     {
                         EmployeeId = user.Id,

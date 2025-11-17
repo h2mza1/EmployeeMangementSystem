@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using System.Drawing;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -117,8 +118,46 @@ namespace EmployeeApi.Controllers
         [Route("api/Employee/GetById/{id}")]
         [Authorize]
         public async Task<IHttpActionResult> GetById(int id)
-        {
-            if(IsAdmin() || IsManager())
+        {   var year = DateTime.Now.Year;
+            var month = DateTime.Now.Month;
+            var monthStart = new DateTime(year, month, 1);
+            var nextMonth = monthStart.AddMonths(1);
+
+            var allDays = Enumerable.Range(0, (nextMonth - monthStart).Days)
+                                    .Select(offset => monthStart.AddDays(offset));
+
+            var workingDays = allDays.Where(d => d.DayOfWeek != DayOfWeek.Friday &&
+                                                 d.DayOfWeek != DayOfWeek.Saturday)
+                                     .ToList();
+
+            int totalWorkingDays = workingDays.Count;
+            const int hoursPerDay = 8;
+            int expectedWorkHours = totalWorkingDays * hoursPerDay;
+            var attendances = (await empDbContext.Attendances
+              .Where(a => a.EmployeeId == id &&
+                          a.Status == true &&
+                          a.CheckInTime.HasValue &&
+                          a.CheckOutTime.HasValue &&
+                          !a.IsDeleted &&
+                          a.CheckInTime.Value >= monthStart &&
+                          a.CheckInTime.Value < nextMonth)
+              .ToListAsync())
+              .Where(x => x.Date.DayOfWeek != DayOfWeek.Friday && x.Date.DayOfWeek != DayOfWeek.Saturday)
+             ;
+
+            int totalWorkHours = 0;
+            foreach (var att in attendances)
+            {
+                DateTime checkIn = DateTime.SpecifyKind(att.CheckInTime.Value, DateTimeKind.Local);
+                DateTime checkOut = DateTime.SpecifyKind(att.CheckOutTime.Value, DateTimeKind.Local);
+                var diff = checkOut - checkIn;
+                if ((int)diff.TotalHours > hoursPerDay)
+                    totalWorkHours += 8;
+                totalWorkHours += (int)diff.TotalHours;
+            }
+
+            int totalAbsentHours = expectedWorkHours - totalWorkHours;
+            if (IsAdmin() || IsManager())
             {
                 var employee = await (from emp in empDbContext.Employees
                                       where (emp.Id == id && !emp.IsDeleted)
@@ -135,6 +174,8 @@ namespace EmployeeApi.Controllers
                                           StartDate = emp.StartDate,
                                           RoleId = emp.RoleId,
                                           RoleName = emp.Role.Name,
+                                          expectedWorkHours = expectedWorkHours,
+                                          workingHours = totalWorkHours
                                       }
                                       ).FirstOrDefaultAsync();
                 if (employee == null) return NotFound();
@@ -158,6 +199,8 @@ namespace EmployeeApi.Controllers
                                           StartDate = emp.StartDate,
                                           RoleId = emp.RoleId,
                                           RoleName = emp.Role.Name,
+                                          expectedWorkHours = expectedWorkHours,
+                                          workingHours = totalWorkHours
                                       }
                                       ).FirstOrDefaultAsync(); ;
                 if (employee == null) return NotFound();
