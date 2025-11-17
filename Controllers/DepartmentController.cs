@@ -79,6 +79,10 @@ namespace EmployeeApi.Controllers
             if (string.IsNullOrEmpty(model.Name))
                 return BadRequest("Name is required");
             var dept = new Department { Name = model.Name };
+            var checkName = await context.Departments
+                .AnyAsync(x=> x.Name.ToLower().Trim() == model.Name.ToLower().Trim());
+            if(checkName)
+            return BadRequest($"the department {model.Name} already founded");
             context.Departments.Add(dept);
             await context.SaveChangesAsync();
             return Ok(Mapping.MapTo(dept));

@@ -34,6 +34,7 @@ import { LeaveComponent } from './leave/leave.component';
 import { LeaveReqComponent } from './components/empHome/leave-req/leave-req.component';
 import { MatSelectModule } from '@angular/material/select';
 import { SalarydetailsComponent } from './components/empHome/salarydetails/salarydetails.component';
+import { AttendanceComponent as EmpAttendance } from './components/empHome/attendance/attendance.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -57,7 +58,8 @@ import { SalarydetailsComponent } from './components/empHome/salarydetails/salar
     EmployeeEntry,
     LeaveComponent,
     LeaveReqComponent,
-    SalarydetailsComponent
+    SalarydetailsComponent,
+    EmpAttendance
     
   ],
   imports: [

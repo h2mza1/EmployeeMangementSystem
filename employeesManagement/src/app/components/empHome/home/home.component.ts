@@ -13,6 +13,7 @@ import { SalaryService } from 'src/app/Services/salary.service';
 import { Salary } from 'src/app/Models/salary';
 import { log } from 'console';
 import { SalarydetailsComponent } from '../salarydetails/salarydetails.component';
+import { AttendanceComponent } from '../attendance/attendance.component';
 export enum RequestStatus {
   Pinding = 1,
   Reject = 2,
@@ -130,7 +131,15 @@ export class HomeComponent implements OnInit {
       }
     )
   }
-
+openAttendacePage()
+{
+  const dialogRef = this.dialog.open(AttendanceComponent,
+    {
+      width:"auto",
+      data:this.user.Id
+    }
+  )
+}
   // this.leaveService.addLeave(payload).subscribe({
   //   next: () => {
   //     Swal.fire('✅ Success', 'Your request has been submitted!', 'success');

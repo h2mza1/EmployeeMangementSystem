@@ -61,6 +61,10 @@ namespace EmployeeApi.Controllers
 
                     if (nowTime < startTime || nowTime > endTime)
                         return Ok(new { success = "true", data = token });
+                    var today = DateTime.Today;
+                    if(today.DayOfWeek == DayOfWeek.Friday | today.DayOfWeek == DayOfWeek.Saturday)
+                        return Ok(new { success = "true", data = token });
+
                     var attendance = new Attendance
                     {
                         EmployeeId = user.Id,

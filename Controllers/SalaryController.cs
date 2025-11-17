@@ -27,7 +27,8 @@ namespace EmployeeApi.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
+            if(model.EmployeeId ==0)
+                return BadRequest("PLZ select the employee");
             var employeeExists = await _context.Employees
                 .AnyAsync(x => x.Id == model.EmployeeId && !x.IsDeleted);
 
@@ -465,9 +466,6 @@ namespace EmployeeApi.Controllers
                 DateTime checkOut = DateTime.SpecifyKind(att.CheckOutTime.Value, DateTimeKind.Local);
 
 
-                //// استثناء الجمعة والسبت
-                //if (checkIn.DayOfWeek == DayOfWeek.Friday || checkIn.DayOfWeek == DayOfWeek.Saturday)
-                //    continue;
                 
                 var diff = checkOut - checkIn;
                 if ((int)diff.TotalHours > hoursPerDay)

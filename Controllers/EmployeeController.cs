@@ -226,6 +226,10 @@ namespace EmployeeApi.Controllers
                                     where (!emp.IsDeleted && emp.Email.ToLower() == model.Email.ToLower())
                                     select emp.Email
                                     ).AnyAsync();
+            if(model.DeptId==0)
+                return BadRequest("plz select the department");
+            if (model.RoleId == 0)
+                return BadRequest("plz select the role");
             if (checkEmail)
                 return BadRequest($"email {model.Email} already founded");
             var recored = new Employee
@@ -244,6 +248,11 @@ namespace EmployeeApi.Controllers
             if(model.Password != null)
             {
                 var hash = HashingService.HashPassword(model.Password);
+                recored.Password = hash;
+            }
+            else
+            {
+                var hash = HashingService.HashPassword("hamza");
                 recored.Password = hash;
             }
             try
@@ -351,6 +360,12 @@ namespace EmployeeApi.Controllers
                     {
                         return BadRequest(ex.Message);
                     }
+            }
+            else
+            {
+
+                var hash = HashingService.HashPassword("hamza");
+                empres.Password = hash;
             }
                 
             await empDbContext.SaveChangesAsync();

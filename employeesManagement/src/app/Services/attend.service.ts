@@ -66,5 +66,11 @@ export class AttendService {
   {
     return this._context.get<number>(`${environment.baseUrl}/Attendance/GetCountOfPresentDay/${id}`)
   }
+   getByUserId(id: number , month?:number , year?:number): Observable<Attendance[]> {
+
+return this._context.get<Attendance[]>(
+  `${environment.baseUrl}/Attendance/GetAttendanceByMonthAndUserId/${id}?month=${month}&year=${year}`
+);
+  }
   
 }

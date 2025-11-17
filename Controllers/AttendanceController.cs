@@ -154,7 +154,7 @@ namespace EmployeeApi.Controllers
 
         [HttpGet]
         [Route("api/Attendance/GetByUserId/{id}")]
-        [Authorize(Roles ="Admin")]
+        [Authorize]
         public async Task <IHttpActionResult> GetByUserId(int id)
         {
             //await context.Attendances
@@ -172,24 +172,39 @@ namespace EmployeeApi.Controllers
             //    .OrderByDescending(a => a.Day)
             //    .ToListAsync()
 
-            var records = await (from a in context.Attendances
-                                 where (a.EmployeeId == id && !a.IsDeleted)
-                                 orderby (a.Date)
-                                 select a).AsNoTracking()
-                                 .ToListAsync();
 
-            if(!records.Any())
-                return Ok(new List<AttendDto>());
-            var response = records.Select(x => new AttendDto
+            var result = await context.Attendances
+           .Where(x => x.EmployeeId == id && !x.IsDeleted)
+           .Select(x => new AttendDto
+           {
+               Id = x.Id,
+               EmployeeId = x.EmployeeId,
+               EmployeeName = x.Employee.Name,
+               CheckIn = x.CheckInTime,
+               CheckOut = x.CheckOutTime,
+               Day = x.Date,
+               Status = true,
+           })
+           .OrderByDescending(a => a.Day)
+           .ToListAsync();
+
+            var finalResult = result.Select(x => new AttendDto
             {
                 Id = x.Id,
                 EmployeeId = x.EmployeeId,
-                CheckIn = x.CheckInTime,
-                CheckOut = x.CheckOutTime,
-                Day = x.Date,
-                EmployeeName = x.Employee.Name,
-            });
-            return Ok(response);
+                EmployeeName = x.EmployeeName,
+                CheckIn = x.CheckIn,
+                CheckOut = x.CheckOut,
+                Day = x.Day, // Nullable
+                Status = x.Status,
+                Duration = (x.CheckIn != null)
+                    ? (x.CheckOut != null
+                        ? x.CheckOut.Value - x.CheckIn.Value
+                        : DateTime.Now - x.CheckIn.Value)
+                    : (TimeSpan?)null
+            }).ToList();
+
+            return Ok(finalResult);
         }
         [HttpGet]
         [Route("api/Attendance/GetAttendanceForThisDay")]
@@ -299,6 +314,87 @@ namespace EmployeeApi.Controllers
             if (finalResult.Any()) return Ok(finalResult);
             return Ok(new List<AttendDto>());
         }
+        [HttpGet]
+        [Route("api/Attendance/GetAttendanceByMonthAndUserId/{id}")]
+        [Authorize]
+        public async Task<IHttpActionResult> GetAttendanceByMonthAndUserId(int id,  int? month=null,  int? year=null)
+        {
+            var today = DateTime.Today;
+           if(month==null) month = today.Month;
+           if(year==null) year = today.Year;
+           var emp = await context.Employees
+                .Where(x=> x.Id == id && !x.IsDeleted).FirstOrDefaultAsync();
+            if (IsAdmin() | IsManager())
+            {
+                var daysInMonth = Enumerable.Range(1, DateTime.DaysInMonth(year.Value, month.Value))
+                                            .Select(d => new DateTime(year.Value, month.Value, d))
+                                            .ToList();
+
+                var attendances = await context.Attendances
+                    .Where(a => a.EmployeeId == id && !a.IsDeleted &&
+                                a.Date.Year == year && a.Date.Month == month)
+                    .ToListAsync();
+
+                var result = daysInMonth.Select(day =>
+                {
+                    var att = attendances.FirstOrDefault(a => a.Date.Date == day.Date);
+                    return new AttendDto
+                    {
+                        Id = att?.Id,
+                        EmployeeId = id,
+                        EmployeeName = att?.Employee.Name ?? context.Employees
+                                            .Where(e => e.Id == id).Select(e => e.Name).FirstOrDefault(),
+                        Day = day,
+                        CheckIn = att?.CheckInTime,
+                        CheckOut = att?.CheckOutTime,
+                        Status = att != null, // True إذا فيه حضور
+                        
+                    };
+                }).OrderByDescending(x => x.Day)
+                  .ToList();
+
+                return Ok(result);
+            }
+            else if (GetCurrentUserId() == id)
+           {
+
+                var daysInMonth = Enumerable.Range(1, DateTime.DaysInMonth(year.Value, month.Value))
+                                            .Select(d => new DateTime(year.Value, month.Value, d))
+                                            .ToList();
+
+                var attendances = await context.Attendances
+                    .Where(a => a.EmployeeId == id && !a.IsDeleted &&
+                                a.Date.Year == year && a.Date.Month == month)
+                    .ToListAsync();
+
+                var result = daysInMonth.Select(day =>
+                {
+                    var att = attendances.FirstOrDefault(a => a.Date.Date == day.Date);
+                    return new AttendDto
+                    {
+                        Id = att?.Id,
+                        EmployeeId = id,
+                        EmployeeName = att?.Employee.Name ?? context.Employees
+                                            .Where(e => e.Id == id).Select(e => e.Name).FirstOrDefault(),
+                        Day = day,
+                        CheckIn = att?.CheckInTime,
+                        CheckOut = att?.CheckOutTime,
+                        Status = att != null, // True إذا فيه حضور
+                        Duration = (att != null && att.CheckInTime.HasValue)
+                            ? (att.CheckOutTime.HasValue ? att.CheckOutTime.Value - att.CheckInTime.Value
+                                                         : DateTime.Now - att.CheckInTime.Value)
+                            : (TimeSpan?)null
+                    };
+                }).OrderByDescending(x => x.Day)
+                  .ToList();
+
+                return Ok(result);
+            }
+            else
+            {
+                return Unauthorized();
+            }
+        }
         [HttpDelete]
         [Route("api/Attendance/Delete/{id}")]
         public async Task<IHttpActionResult> Delete(int id)
@@ -338,6 +434,10 @@ namespace EmployeeApi.Controllers
             var check = await (from x in context.Attendances
                                where (x.EmployeeId == model.EmployeeId && x.Date == model.Day && !x.IsDeleted)
                                select x).AnyAsync();
+            var emp = await context.Employees
+                .Where(x=> x.Id == model.EmployeeId).FirstOrDefaultAsync();
+            if(model.Day < emp.StartDate || model.Day > emp.EndDate)
+                return BadRequest($"Date must between {emp.StartDate.Date} and {emp.EndDate.Date}");
             if (check)
                 return BadRequest("This employee already cheaked");
             var attendace = new Attendance

@@ -1,0 +1,59 @@
+<div class="container my-5" style="max-height: 400px;">
+<!-- Filters Section -->
+<div class="row g-3 mb-4">
+
+
+  <!-- اختيار شهر -->
+  <div class="col-md-3">
+    <label class="form-label"> select month</label>
+    <select class="form-select" [(ngModel)]="selectedMonth">
+      <option *ngFor="let m of months" [value]="m.value">{{ m.name }}</option>
+    </select>
+  </div>
+
+  <div class="col-md-3">
+    <label class="form-label">select year</label>
+    <select class="form-select" [(ngModel)]="selectedYear">
+      <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+    </select>
+  </div>
+
+  <div class="col-md-2 d-flex align-items-end">
+    <button class="btn btn-primary w-100" (click)="applyFilter()">
+      Filter
+    </button>
+  </div>
+
+<!-- Table -->
+<div class="table-responsive shadow-lg rounded-4 p-2">
+  <table class="table table-bordered table-striped align-middle text-center rounded-4 overflow-hidden">
+    <thead class="table-primary">
+      <tr>
+        <th colspan="6" class="fs-5">Employee Attendance Report</th>
+      </tr>
+      <tr class="fw-semibold bg-light">
+        <th>Employee Name</th>
+        <th>Check In</th>
+        <th>Check Out</th>
+        <th>Duration</th>
+        <th>Day</th>
+        <th>Status</th>
+      </tr> 
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let att of attendList" [ngClass]="att.Status ? 'table-success' : 'table-danger'">
+        <td>{{att.EmployeeName}}</td>
+        <td>{{att.CheckIn | date:'hh:mm a'}}</td>
+        <td>{{att.CheckOut | date:'hh:mm a'}}</td>
+        <td>{{att.Duration}}</td>
+        <td>{{att.Day | date:"EEEE, d/M/y"}}</td>
+        
+        <td  *ngIf="att.Status">Present</td>
+           <td  *ngIf="!att.Status">Absent</td>
+      </tr>
+    </tbody>
+
+  </table>
+</div>
+</div>
