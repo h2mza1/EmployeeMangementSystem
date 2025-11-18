@@ -5,29 +5,29 @@
     </h2>
   </div>
 
-  <div class="d-flex justify-content-start mb-3">
+  <!-- <div class="d-flex justify-content-start mb-3">
     <button class="btn btn-primary shadow-sm" (click)="openAddOrUpdate()">
       <i class="bi bi-plus-lg me-1"></i> Add New Request
     </button>
-  </div>
+  </div> -->
 
   <div class="card shadow-sm border-0 mb-4">
     <div class="card-body">
       <div class="row g-3 align-items-end">
 
-        <!-- بحث بالاسم -->
-        <!-- <div class="col-md-3">
+        <div class="col-md-3">
           <label class="form-label fw-semibold text-secondary">
-            <i class="bi bi-search me-2"></i> Search Name
+            <i class="bi bi-search me-2"></i> Search 
           </label>
           <input
             type="text"
             class="form-control"
             placeholder="Enter employee name..."
-            [(ngModel)]="searchName"
-            (input)="applyFilters()"
+            [(ngModel)]="item"
+            
+            (ngModelChange)="search()"
           />
-        </div> -->
+        </div>
 
         <!-- نوع الطلب -->
         <!-- <div class="col-md-3">
@@ -45,37 +45,23 @@
         </div> -->
 
         <!-- الحالة -->
-        <!-- <div class="col-md-3">
+        <div class="col-md-3">
           <label class="form-label fw-semibold text-secondary">
             <i class="bi bi-clipboard-check me-2"></i> Status
           </label>
           <select
             class="form-select"
-            [(ngModel)]="selectedStatus"
-            (change)="applyFilters()"
+           [(ngModel)]="selectedStatus"
+           (ngModelChange)="filter()"
           >
             <option value="">All Statuses</option>
-            <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+            <option *ngFor="let s of reqStatus" [value]="s">{{ s }}</option>
           </select>
-        </div> -->
-
-        <div class="col-md-2">
-          <label class="form-label fw-semibold text-secondary">
-            <i class="bi bi-calendar-date me-2"></i> Start Date
-          </label>
-          <input
-            type="date"
-            class="form-control"
-            
-          />
         </div>
 
-        <div class="col-md-1 d-flex">
-          <button class="btn btn-outline-secondary w-100" >
-            <i class="bi bi-arrow-counterclockwise"></i>
-          </button>
-        </div>
+  
 
+ 
       </div>
     </div>
   </div>
@@ -113,9 +99,11 @@
           <tbody class="table-group-divider">
             <tr
               *ngFor="let leave of reqList; let i = index"
-              class=" color-green"
-                            style="background-color: black !important;"
-
+[ngClass]="{
+  'table-danger': leave.Status === 'Rejected',
+  'table-active': leave.Status === 'Approved',
+  'table-warning': leave.Status !== 'Rejected' && leave.Status !== 'Approved'
+}"              
             >
               <td >{{ i + 1 }}</td>
               <td>{{ leave.EmployeeName }}</td>
@@ -135,18 +123,19 @@
                 <i class="bi bi-trash"></i>
             </button>
 
-            <!-- رفض -->
             <button
                 class="btn btn-sm btn-danger me-1" title="reject" 
                 (click)="reject(leave?.Id ?? 0)"
+                [disabled]="leave.Status== 'Rejected'"
             >
                 <i class="bi bi-x-circle"></i>
             </button>
 
-            <!-- قبول -->
             <button
                 class="btn btn-sm btn-success" title="approve"
                 (click)="approve(leave?.Id ?? 0)"
+               [disabled]="leave.Status== 'Approved'"
+
             >
 
                 <i class="bi bi-check-circle"></i>

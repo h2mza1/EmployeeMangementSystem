@@ -54,7 +54,7 @@ generateYears() {
         {
           this.attendList=res
  this.attendList.forEach(element => {
-        const checkInDate = new Date(element.CheckIn);  // تحويل النص إلى Date
+        const checkInDate = new Date(element.CheckIn);  
         const checkOutDate = new Date(element.CheckOut);
 
         element.Duration = (checkOutDate.getHours() - checkInDate.getHours()).toString();
