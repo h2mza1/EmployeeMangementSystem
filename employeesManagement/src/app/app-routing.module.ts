@@ -11,7 +11,7 @@ import { IndexComponent as profile } from './components/Shared/profile/index/ind
 import { SalaryComponent } from './components/Finance/salary/salary.component';
 import { DateSelectComponent } from './components/attend/date-select/date-select.component';
 import { IndexComponent as HistoryIndex } from './components/history/index/index.component';
-import { LeaveComponent } from './leave/leave.component';
+import { LeaveComponent } from './components/leaveManage/leave/leave.component';
 import { EmployeeGuard } from './guards/employee.guard';
 
 const routes: Routes = [

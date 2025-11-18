@@ -73,13 +73,8 @@ export class HomeComponent implements OnInit {
           this.empService.getById(this.id).subscribe({
             next: (res) => {
               this.user = res;
-              this.leaveService.getRequestsByUserId(this.user.Id).subscribe({
-                next: (res) => {
-                  this.requests = res;
-                  console.log(res);
-                },
-                error: (err) => console.log(err),
-              });
+            this.loadAllReq()
+
               this.salService.getSalaryByUserAndDate(this.user.Id,new Date())
               .subscribe(
                 {
@@ -121,6 +116,18 @@ export class HomeComponent implements OnInit {
       width: 'auto',
       data: { id: this.user.Id, name: this.user.Name },
     });
+    dialogRef.afterClosed()
+    .subscribe(
+      {
+        next:(res)=>
+        {
+          if(res==true)
+          {
+            this.loadAllReq()
+          }
+        }
+      }
+    )
   }
   salDetails()
   {
@@ -139,6 +146,16 @@ openAttendacePage()
       data:this.user.Id
     }
   )
+}
+loadAllReq()
+{
+    this.leaveService.getRequestsByUserId(this.user.Id).subscribe({
+                next: (res) => {
+                  this.requests = res;
+                  console.log(res);
+                },
+                error: (err) => console.log(err),
+              });
 }
   // this.leaveService.addLeave(payload).subscribe({
   //   next: () => {

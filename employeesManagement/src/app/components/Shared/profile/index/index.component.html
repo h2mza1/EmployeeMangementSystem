@@ -35,14 +35,14 @@
     <div class="col-12 col-md-6">
       <mat-form-field appearance="outline" class="w-100 mb-3">
         <mat-label>Start Date</mat-label>
-        <input matInput [(ngModel)]="Emp.StartDate" disabled />
+        <input matInput [value]="Emp.StartDate | date:'yyyy-MM-dd'" disabled />
       </mat-form-field>
     </div>
 
     <div class="col-12 col-md-6">
       <mat-form-field appearance="outline" class="w-100 mb-3">
         <mat-label>End Date</mat-label>
-        <input matInput [(ngModel)]="Emp.EndDate" disabled />
+        <input matInput [value]="Emp.EndDate | date:'yyyy-MM-dd'" disabled />
       </mat-form-field>
     </div>
 

@@ -5,7 +5,7 @@
     <p class="text-muted">Detailed breakdown of your salary</p>
   </div>
 
-  <div class="table-responsive shadow-lg rounded-4" *ngFor="let sal of salList">
+  <div class="table-responsive shadow-lg rounded-4" >
     
     <table class="table table-bordered table-striped align-middle text-center rounded-4 overflow-hidden">
 
@@ -30,7 +30,7 @@
           <td>Net Salary</td>
         </tr>
 
-        <tr>
+        <tr *ngFor="let sal of salList">
           <td>{{sal.EmployeeName}}</td>
           <td>{{sal.DeptName}}</td>
           <td>{{sal.Month}}</td>

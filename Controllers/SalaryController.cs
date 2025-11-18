@@ -366,7 +366,11 @@ namespace EmployeeApi.Controllers
                        Deduction = x.Deduction,
                        NetSalary = x.NetSalary,
                        EmployeeName = x.Employee.Name ?? ""
-                   }).ToListAsync();
+                   })
+                   .OrderByDescending(x=> x.Month)
+                   .ThenBy(x=> x.Year)
+                   .ToListAsync()
+                    ;
 
                 return Ok(salaries);
             }

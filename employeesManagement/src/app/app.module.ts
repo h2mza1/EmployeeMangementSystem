@@ -30,11 +30,12 @@ import { DeleteComponent as SharedDelete } from './components/Shared/delete/dele
 import { EntryComponent as AttendEntry } from './components/attend/entry/entry.component';
 import { IndexComponent as HistoryIndex } from './components/history/index/index.component';
 import { EntryComponent as EmployeeEntry } from './components/employee/entry/entry.component';
-import { LeaveComponent } from './leave/leave.component';
+import { LeaveComponent } from './components/leaveManage/leave/leave.component';
 import { LeaveReqComponent } from './components/empHome/leave-req/leave-req.component';
 import { MatSelectModule } from '@angular/material/select';
 import { SalarydetailsComponent } from './components/empHome/salarydetails/salarydetails.component';
 import { AttendanceComponent as EmpAttendance } from './components/empHome/attendance/attendance.component';
+import { AddLeaveComponent } from './components/leaveManage/add-leave/add-leave.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -59,7 +60,8 @@ import { AttendanceComponent as EmpAttendance } from './components/empHome/atten
     LeaveComponent,
     LeaveReqComponent,
     SalarydetailsComponent,
-    EmpAttendance
+    EmpAttendance,
+    AddLeaveComponent
     
   ],
   imports: [
