@@ -546,7 +546,7 @@ namespace EmployeeApi.Controllers
             int totalAbsentHoursAdjusted = totalAbsentHours - paidLeaveHours;
             if (totalAbsentHoursAdjusted < 0) totalAbsentHoursAdjusted = 0;
 
-            var baseSalary = await _context.Employees
+            var baseSalary = await _context.Employees   
                 .Where(e => e.Id == employeeId && !e.IsDeleted)
                 .Select(e => e.BaseSalary)
                 .FirstOrDefaultAsync();

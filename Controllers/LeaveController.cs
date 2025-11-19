@@ -71,7 +71,7 @@ namespace EmployeeApi.Controllers
             if (check)
                 return BadRequest("The Employee has a leave record on this day");
             if(model.StartDate.DayOfWeek == DayOfWeek.Friday || model.StartDate.DayOfWeek == DayOfWeek.Saturday)
-                return BadRequest("Friday and Sunday is a forma vacation");
+                return BadRequest("Friday and Sunday is a formal vacation");
 
             var leave = new LeaveRequest
             {

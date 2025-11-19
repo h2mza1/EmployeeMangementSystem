@@ -153,7 +153,8 @@ namespace EmployeeApi.Controllers
                 var diff = checkOut - checkIn;
                 if ((int)diff.TotalHours > hoursPerDay)
                     totalWorkHours += 8;
-                totalWorkHours += (int)diff.TotalHours;
+                else
+                    totalWorkHours += (int)diff.TotalHours;
             }
 
             int totalAbsentHours = expectedWorkHours - totalWorkHours;
