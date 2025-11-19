@@ -460,7 +460,7 @@ namespace EmployeeApi.Controllers
         }
 
         private async Task<(decimal baseSalary, decimal deduction, decimal netSalary, int totalWorkHours, int totalAbsentHours)>
-       CalculateSalaryAsync(int employeeId, int month, int year)
+ CalculateSalaryAsync(int employeeId, int month, int year)
         {
             var monthStart = new DateTime(year, month, 1);
             var nextMonth = monthStart.AddMonths(1);
@@ -478,15 +478,13 @@ namespace EmployeeApi.Controllers
 
             var attendances = (await _context.Attendances
                 .Where(a => a.EmployeeId == employeeId &&
-                            
                             a.CheckInTime.HasValue &&
                             a.CheckOutTime.HasValue &&
                             !a.IsDeleted &&
-                            a.CheckInTime.Value>= monthStart &&
+                            a.CheckInTime.Value >= monthStart &&
                             a.CheckInTime < nextMonth)
                 .ToListAsync())
-                .Where(x=> x.Date.DayOfWeek != DayOfWeek.Friday && x.Date.DayOfWeek != DayOfWeek.Saturday)
-               ;
+                .Where(x => x.Date.DayOfWeek != DayOfWeek.Friday && x.Date.DayOfWeek != DayOfWeek.Saturday);
 
             int totalWorkHours = 0;
             foreach (var att in attendances)
@@ -494,19 +492,14 @@ namespace EmployeeApi.Controllers
                 DateTime checkIn = DateTime.SpecifyKind(att.CheckInTime.Value, DateTimeKind.Local);
                 DateTime checkOut = DateTime.SpecifyKind(att.CheckOutTime.Value, DateTimeKind.Local);
 
-
-                
                 var diff = checkOut - checkIn;
-                if ((int)diff.TotalHours > hoursPerDay)
-                    totalWorkHours += 8;
-                else
-                    totalWorkHours += (int)diff.TotalHours;
+                totalWorkHours += Math.Min((int)diff.TotalHours, hoursPerDay);
             }
 
             int totalAbsentHours = expectedWorkHours - totalWorkHours;
             if (totalAbsentHours < 0) totalAbsentHours = 0;
 
-          
+            // رصيد الإجازات السنوي
             int legalBalance = 14 * 8;
             int sickBalance = 14 * 8;
 
@@ -520,35 +513,38 @@ namespace EmployeeApi.Controllers
                             l.StartDate.Year == year)
                 .ToListAsync();
 
+            // حساب الإجازات السابقة للشهر الحالي
+            int usedLegalHoursBeforeMonth = approvedLeaves
+                .Where(l => l.VacationId == legalVac.Id && l.StartDate < monthStart)
+                .Sum(l => CalculateLeaveHours(l));
 
-            int usedLegalHours = 0;
-            int usedSickHours = 0;
+            int remainingLegalHours = legalBalance - usedLegalHoursBeforeMonth;
 
-            foreach (var l in approvedLeaves)
-            {
-                int hours = CalculateLeaveHours(l);
+            int usedSickHoursBeforeMonth = approvedLeaves
+                .Where(l => l.VacationId == sickVac.Id && l.StartDate < monthStart)
+                .Sum(l => CalculateLeaveHours(l));
 
-                if (legalVac != null && l.VacationId == legalVac.Id)
-                    usedLegalHours += hours;
+            int remainingSickHours = sickBalance - usedSickHoursBeforeMonth;
 
-                if (sickVac != null && l.VacationId == sickVac.Id)
-                    usedSickHours += hours;
-            }
+            // حساب الإجازات في الشهر الحالي
+            int usedLegalHoursThisMonth = approvedLeaves
+                .Where(l => l.VacationId == legalVac.Id && l.StartDate >= monthStart && l.StartDate < nextMonth)
+                .Sum(l => CalculateLeaveHours(l));
 
-            // الإجازات المدفوعة
-            int paidLegalHours = Math.Min(usedLegalHours, legalBalance);
-            int paidSickHours = Math.Min(usedSickHours, sickBalance);
+            int paidLegalHours = Math.Min(usedLegalHoursThisMonth, Math.Max(0, remainingLegalHours));
+            int extraLegal = usedLegalHoursThisMonth - paidLegalHours;
 
-            // الإجازات الزائدة (غير مدفوعة)
-            int extraLegal = usedLegalHours - paidLegalHours;
-            int extraSick = usedSickHours - paidSickHours;
+            int usedSickHoursThisMonth = approvedLeaves
+                .Where(l => l.VacationId == sickVac.Id && l.StartDate >= monthStart && l.StartDate < nextMonth)
+                .Sum(l => CalculateLeaveHours(l));
+
+            int paidSickHours = Math.Min(usedSickHoursThisMonth, Math.Max(0, remainingSickHours));
+            int extraSick = usedSickHoursThisMonth - paidSickHours;
 
             int paidLeaveHours = paidLegalHours + paidSickHours;
 
             int totalAbsentHoursAdjusted = totalAbsentHours - paidLeaveHours;
             if (totalAbsentHoursAdjusted < 0) totalAbsentHoursAdjusted = 0;
-
-
 
             var baseSalary = await _context.Employees
                 .Where(e => e.Id == employeeId && !e.IsDeleted)
@@ -556,15 +552,13 @@ namespace EmployeeApi.Controllers
                 .FirstOrDefaultAsync();
 
             decimal hourlyRate = baseSalary / expectedWorkHours;
-            decimal deduction = (totalAbsentHoursAdjusted
-                          + extraLegal
-                          + extraSick)
-                          * hourlyRate;
+            decimal deduction = (totalAbsentHoursAdjusted + extraLegal + extraSick) * hourlyRate;
 
             decimal netSalary = baseSalary - deduction;
 
             return (baseSalary, deduction, netSalary, totalWorkHours, totalAbsentHoursAdjusted);
         }
+
 
 
 

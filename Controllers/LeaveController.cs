@@ -12,8 +12,15 @@ namespace EmployeeApi.Controllers
 {
     public class LeaveController : SharedController
     {
+        private TimeSpan startTime;
+        private TimeSpan endTime;
         private readonly EmpDbContext context;
-        public LeaveController() { context = new EmpDbContext(); }
+        public LeaveController()
+        { 
+            context = new EmpDbContext();
+            startTime = new TimeSpan(8, 0, 0);
+            endTime = new TimeSpan(17, 0, 0);
+        }
 
         // Helper to map LeaveRequest to DTO
         private async Task<LeaveRequestDto> MapToDto(LeaveRequest record)
@@ -52,7 +59,15 @@ namespace EmployeeApi.Controllers
 
             bool check = await context.LeaveRequests
                 .AnyAsync(x => x.StartDate == model.StartDate && x.EmployeeId == model.EmployeeId && !x.IsDeleted);
-
+            if(model.EndDate != null)
+            {
+                model.FromTime = null;
+                model.ToTime = null;
+            }
+            if (model.FromTime.Value.TimeOfDay > endTime || model.FromTime.Value.TimeOfDay < startTime)
+                return BadRequest($"Exit must bitween {startTime} and {endTime}");
+            if (model.ToTime.Value.TimeOfDay > endTime || model.ToTime.Value.TimeOfDay < startTime)
+                return BadRequest($"Exit must bitween {startTime} and {endTime}");
             if (check)
                 return BadRequest("The Employee has a leave record on this day");
             if(model.StartDate.DayOfWeek == DayOfWeek.Friday || model.StartDate.DayOfWeek == DayOfWeek.Saturday)
@@ -196,16 +211,24 @@ namespace EmployeeApi.Controllers
 
         public async Task<IHttpActionResult> GetUnUsedHours(int id)
         {
-            var requests = await context.LeaveRequests
-                .Where(x => !x.IsDeleted && x.EmployeeId == id && x.Status == RequestStatus.Approved)
+            var legalrequests = await context.LeaveRequests
+                .Where(x => !x.IsDeleted && x.EmployeeId == id && x.Status == RequestStatus.Approved && x.Vacation.Name.ToLower()== "legal leave")
                 .ToListAsync();
 
-            int totalHours = 0;
-            foreach (var req in requests)
+            int legaltotalHours = 0;
+            foreach (var req in legalrequests)
             {
-                totalHours += CalculateLeaveHours(req);
+                legaltotalHours += CalculateLeaveHours(req);
             }
-            return Ok(totalHours);
+            var sickRequest = await context.LeaveRequests
+                .Where(x => !x.IsDeleted && x.EmployeeId == id && x.Status == RequestStatus.Approved && x.Vacation.Name.ToLower() == "sick leave")
+                .ToListAsync();
+            int sicktotalHours = 0;
+            foreach (var req in sickRequest)
+            {
+                sicktotalHours += CalculateLeaveHours(req);
+            }
+            return Ok(new { legaltotalHours, sicktotalHours });
         }
         //Vacation
         [HttpGet]
