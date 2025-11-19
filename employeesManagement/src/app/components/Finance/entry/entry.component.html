@@ -9,9 +9,9 @@
     <!-- Employee -->
     <div class="mb-3">
       <label class="form-label">Employee</label>
-      <select class="form-select" formControlName="EmployeeId">
+      <select class="form-select" formControlName="EmployeeId" >
         <option value="0" disabled>-- Select Employee --</option>
-        <option *ngFor="let emp of empList" [value]="emp.Id">{{ emp.Name }}</option>
+        <option *ngFor="let emp of empList" [value]="emp.Id" >{{ emp.Name }}</option>
       </select>
     </div>
 

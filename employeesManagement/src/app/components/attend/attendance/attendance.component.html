@@ -41,10 +41,10 @@
               <td *ngIf="item.Status">Present</td>
               <td *ngIf="!item.Status">Absent</td>
               <td class="text-center">
-                <button class="btn btn-sm btn-warning me-2" (click)="openDialogAdd(item.Id)" >
+                <button class="btn btn-sm btn-warning me-2" [disabled]="!item.Status" (click)="openDialogAdd(item.Id)" >
                   <i class="bi bi-pencil"></i>
                 </button>
-                <button class="btn btn-sm btn-danger" (click)="openDialog(item.Id)">
+                <button class="btn btn-sm btn-danger" [disabled]="!item.Status"(click)="openDialog(item.Id)">
                   <i class="bi bi-trash"></i>
                 </button>
               </td>

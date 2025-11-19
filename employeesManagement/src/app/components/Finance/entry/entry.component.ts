@@ -12,7 +12,7 @@ import { SalaryService } from 'src/app/Services/salary.service';
 })
 export class EntryComponent implements OnInit {
     date : Date = new Date
-
+    id:number=0
   salaryForm:FormGroup 
    empList:Employee[]=[]
   constructor(
@@ -42,9 +42,14 @@ save()
   {
     var salary = this.salaryForm.value;
     salary.Day = this.date
-    salary.Month = this.date.getMonth
-    salary.Year = this.date.getFullYear
-    salary.Id = 0 
+    var date = new Date(salary.Day)
+    salary.Month = date.getMonth()+1
+    salary.Year =date.getFullYear()
+    salary.Id=0
+    
+    let sal: Salary = {} as Salary;
+    
+
     this.service.addSalary(salary)
     .subscribe(
       {

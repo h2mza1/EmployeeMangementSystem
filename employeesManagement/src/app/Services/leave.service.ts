@@ -38,5 +38,8 @@ export class LeaveService {
   getRequestsByUserId(id: number) {
   return this.context.get<Leave[]>(`${environment.baseUrl}/Leave/getRequestsByUserId/${id}`);
 }
-
+getUsedHours(id:number):Observable<number>
+{
+  return this.context.get<number>(`${environment.baseUrl}/Leave/GetUnUsedHours/${id}`)
+}
 }

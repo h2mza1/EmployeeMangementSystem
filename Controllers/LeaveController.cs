@@ -190,6 +190,23 @@ namespace EmployeeApi.Controllers
 
             return Ok(result);
         }
+        [HttpGet]
+        [Authorize]
+        [Route("api/Leave/GetUnUsedHours/{id}")]
+
+        public async Task<IHttpActionResult> GetUnUsedHours(int id)
+        {
+            var requests = await context.LeaveRequests
+                .Where(x => !x.IsDeleted && x.EmployeeId == id && x.Status == RequestStatus.Approved)
+                .ToListAsync();
+
+            int totalHours = 0;
+            foreach (var req in requests)
+            {
+                totalHours += CalculateLeaveHours(req);
+            }
+            return Ok(totalHours);
+        }
         //Vacation
         [HttpGet]
         [Route("api/Vacation/GetAll")]
@@ -208,5 +225,27 @@ namespace EmployeeApi.Controllers
             }
             return Ok(new List<VacationDto>()); 
         }
+
+        private int CalculateLeaveHours(LeaveRequest l)
+        {
+            // لو الإجازة بالساعات
+            if (l.FromTime.HasValue && l.ToTime.HasValue)
+            {
+                return (int)(l.ToTime.Value - l.FromTime.Value).TotalHours;
+            }
+
+            // لو بالأيام
+            DateTime end = l.EndDate ?? l.StartDate;
+            int totalHours = 0;
+            for (var date = l.StartDate.Date; date <= end.Date; date = date.AddDays(1))
+            {
+                if (date.DayOfWeek != DayOfWeek.Friday && date.DayOfWeek != DayOfWeek.Saturday)
+                {
+                    totalHours += 8; // يوم عمل = 8 ساعات
+                }
+            }
+            return totalHours;
+        }
+
     }
 }

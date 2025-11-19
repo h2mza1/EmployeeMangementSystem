@@ -378,7 +378,7 @@ namespace EmployeeApi.Controllers
                                             .Where(e => e.Id == id).Select(e => e.Name).FirstOrDefault(),
                         Day = day,
                         CheckIn = att?.CheckInTime,
-                        CheckOut = att?.CheckOutTime,
+                        CheckOut = att?.CheckOutTime,   
                         Status = att != null, // True إذا فيه حضور
                         Duration = (att != null && att.CheckInTime.HasValue)
                             ? (att.CheckOutTime.HasValue ? att.CheckOutTime.Value - att.CheckInTime.Value

@@ -1,5 +1,5 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, Inject, ViewChild } from '@angular/core';
+import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Attendance } from 'src/app/Models/attendance';
 import { Employee } from 'src/app/Models/employee';
@@ -24,10 +24,11 @@ export class EntryComponent implements OnInit {
     EmployeeId: 0,
     Status:false
   };
+  @ViewChild('addForm') addForm!: NgForm;
   constructor(
     private dialogRef: MatDialogRef<EntryComponent>,
     private employeeService: EmployeeService,
-    @Inject(MAT_DIALOG_DATA) public data: { id: number },
+    @Inject(MAT_DIALOG_DATA) public data: { id: number},
     private service: AttendService
   ) {
     this.attendForm = new FormGroup({

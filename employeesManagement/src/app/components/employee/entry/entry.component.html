@@ -4,7 +4,7 @@
   </div>
 
   <div class="card-body">
-    <form (ngSubmit)="save()">
+    <form (ngSubmit)="save()" #addForm>
       <div class="row g-3">
 
         <!-- Name -->
@@ -22,13 +22,13 @@
         <!-- Phone -->
         <div class="col-md-4">
           <input type="text" class="form-control" placeholder="Phone"
-                 [(ngModel)]="data.Phone" name="Phone" required>
+                 [(ngModel)]="data.Phone" name="Phone" >
         </div>
 
         <!-- Password -->
         <div class="col-md-4">
           <input type="password" class="form-control" placeholder="Password"
-                 [(ngModel)]="data.Password" name="Password" required>
+                 [(ngModel)]="data.Password" name="Password" >
         </div>
 
         <!-- Start Date -->
@@ -82,7 +82,7 @@
 
         <!-- Buttons -->
         <div class="col-12 d-flex justify-content-end gap-2 mt-3">
-          <button type="submit" class="btn btn-success px-4">
+          <button type="submit" class="btn btn-success px-4" [disabled]="!addForm.checkValidity()"> 
             <i class="bi bi-save me-1"></i> Save
           </button>
           <button type="button" class="btn btn-secondary px-4" (click)="close()">

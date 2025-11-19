@@ -47,7 +47,7 @@ export class HomeComponent implements OnInit {
   presentDayCount: number = 0;
   requests: Leave[] = [];
   latestSal!: Salary;
-
+  usedHours:number = 0
   request = { Type: 'Leave', StartDate: '', EndDate: '', Reason: '' };
   constructor(
     private empService: EmployeeService,
@@ -74,7 +74,15 @@ export class HomeComponent implements OnInit {
             next: (res) => {
               this.user = res;
             this.loadAllReq()
-
+              this.leaveService.getUsedHours(this.id)
+              .subscribe(
+                {
+                  next:(res)=>
+                  {
+                    this.usedHours=res
+                  }
+                }
+              )
               this.salService.getSalaryByUserAndDate(this.user.Id,new Date())
               .subscribe(
                 {
