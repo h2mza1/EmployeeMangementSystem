@@ -32,10 +32,8 @@ export class IndexComponent implements OnInit {
         ];
 
         this.filteredHistory = [...this.historyList];
-        console.log('History List:', this.historyList);
       },
       error: (err) => {
-        console.error('Error loading history:', err);
       },
     });
   }
@@ -69,7 +67,6 @@ export class IndexComponent implements OnInit {
 
       },
       error: (err) => {
-        console.error(err);
       },
     });
   }

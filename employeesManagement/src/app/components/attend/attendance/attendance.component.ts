@@ -36,7 +36,6 @@ export class AttendanceComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!this.date && !this.absent && !this.present && !this.searchItem) {
-      console.log('No filters active → reload all');
       this.loadEmployee();
       return;
     }
@@ -92,10 +91,9 @@ export class AttendanceComponent implements OnInit, OnChanges {
       if (res) {
         this._attendService.delete(id).subscribe({
           next: () => {
-            console.log(`Item with id ${id} deleted successfully`);
             this.AttenList = this.AttenList.filter((item) => item.Id !== id);
           },
-          error: (err) => console.error('Delete failed', err),
+          error: (err) => {},
         });
       }
     });

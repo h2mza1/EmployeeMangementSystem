@@ -69,7 +69,7 @@ export class EntryComponent implements OnInit {
     this.getALLDepts();
     this.auth.isLogedIn$.subscribe((res) => (this.isLogin = res));
       this.getAllRole()
-      console.log(this.roleList)
+     
       if(this.isLogin)
       {
    this.auth.userInfo$
@@ -77,7 +77,7 @@ export class EntryComponent implements OnInit {
         next:(res)=>
         {
           this.roleName=res.role
-          console.log(this.roleName)
+        
         }
       })
       
@@ -141,7 +141,7 @@ export class EntryComponent implements OnInit {
       },
     error:(err)=>
       {
-        console.log(err);
+     
       }}
       
     )

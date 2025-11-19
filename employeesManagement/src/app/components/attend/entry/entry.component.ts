@@ -97,14 +97,14 @@ private toLocalDateString(dateString: Date): string {
           next: (res) => {
             this.dialogRef.close(true);
           },
-          error: (err) => alert(err)
+          error: (err) =>{}
         });
       } else {
         this.service.update(this.data.id, attend).subscribe({
           next: (res) => {
             this.dialogRef.close(true);
           },
-          error: (err) => alert(err)
+          error: (err) => {}
         });
       }
     }

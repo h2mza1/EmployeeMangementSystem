@@ -38,7 +38,6 @@ import { ChangeDetectorRef ,NgZone} from '@angular/core';
           this.totalMonth = res.sumSal;
         },
         error: (err) => {
-          console.log(err);
         },
       });
       this.empService.getAllEmployees()
@@ -55,7 +54,6 @@ import { ChangeDetectorRef ,NgZone} from '@angular/core';
 
         },
         error: (err) => {
-          alert(err);
         },
       });
     }
@@ -74,7 +72,6 @@ import { ChangeDetectorRef ,NgZone} from '@angular/core';
         },
         error: (err) => {
           this.salaryList = [];
-          console.log(this.salaryList);
         },
       });
     }
@@ -170,10 +167,8 @@ import { ChangeDetectorRef ,NgZone} from '@angular/core';
     delete(id: number) {
       this.context.delete(id).subscribe({
         next: (res) => {
-          alert('deleted successfully');
         },
         error: (err) => {
-          alert(err.messsage);
         },
       });
     }
@@ -184,7 +179,7 @@ import { ChangeDetectorRef ,NgZone} from '@angular/core';
         this.salaryList = res;
         this.totalMonth = this.salaryList.reduce((sum, s) => sum + s.NetSalary, 0);
       },
-      error: (err) => console.log(err)
+      error: (err) => {}
     });
   }
 
@@ -194,7 +189,7 @@ import { ChangeDetectorRef ,NgZone} from '@angular/core';
         this.salaryList = res;
         this.totalMonth = this.salaryList.reduce((sum, s) => sum + s.NetSalary, 0);
       },
-      error: (err) => console.log(err)
+      error: (err) => {}
     });
   }
 
@@ -205,7 +200,7 @@ import { ChangeDetectorRef ,NgZone} from '@angular/core';
         this.salaryList = res;
         this.totalMonth = this.salaryList.reduce((sum, s) => sum + s.NetSalary, 0);
       },
-      error: (err) => console.log(err)
+      error: (err) =>{}
     });
   }
 
@@ -215,7 +210,7 @@ import { ChangeDetectorRef ,NgZone} from '@angular/core';
         this.salaryList = res.Salaries;
         this.totalMonth = res.sumSal;
       },
-      error: (err) => console.log(err)
+      error: (err) => {}
     });
   }
 }

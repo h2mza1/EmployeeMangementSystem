@@ -27,7 +27,7 @@ export class IndexComponent implements OnInit {
         }
 
         ,
-        error: (err) => console.error('Error fetching employee:', err)
+        error: (err) => {}
       });
     }
   }

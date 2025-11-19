@@ -47,7 +47,9 @@ export class HomeComponent implements OnInit {
   presentDayCount: number = 0;
   requests: Leave[] = [];
   latestSal!: Salary;
-  usedHours:number = 0
+  legalUsedHours:number = 0
+  sickUsedHours:number = 0
+
   request = { Type: 'Leave', StartDate: '', EndDate: '', Reason: '' };
   constructor(
     private empService: EmployeeService,
@@ -62,7 +64,6 @@ export class HomeComponent implements OnInit {
     this.authService.userInfo$.subscribe({
       next: (res) => {
         this.id = res.nameid;
-        console.log('id=' + this.id);
         if (this.id != 0) {
           this.attendService.getCountPresentDay(this.id).subscribe({
             next: (res) => {
@@ -79,7 +80,8 @@ export class HomeComponent implements OnInit {
                 {
                   next:(res)=>
                   {
-                    this.usedHours=res
+                    this.legalUsedHours=res.legaltotalHours
+                    this.sickUsedHours = res.sicktotalHours
                   }
                 }
               )
@@ -89,7 +91,6 @@ export class HomeComponent implements OnInit {
                   next:(res)=>
                   {
                     this.latestSal=res[0]
-                    console.log(this.latestSal)
                   }
                 }
               )
@@ -98,7 +99,6 @@ export class HomeComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.log(err);
       },
     });
   }
@@ -160,9 +160,9 @@ loadAllReq()
     this.leaveService.getRequestsByUserId(this.user.Id).subscribe({
                 next: (res) => {
                   this.requests = res;
-                  console.log(res);
+                  
                 },
-                error: (err) => console.log(err),
+                error: (err) =>{},
               });
 }
   // this.leaveService.addLeave(payload).subscribe({

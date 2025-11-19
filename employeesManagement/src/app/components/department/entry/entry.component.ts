@@ -21,10 +21,10 @@ export class EntryComponent {
   save() {
     if (this.data.Id==0) {
       this.service.addDept(this.data.Name).subscribe(() => this.dialogRef.close(true));
-           console.log(this.data)
+           
 
     } else {
-      console.log(this.data)
+     
       this.service.updateDept(this.data.Id,this.data.Name).subscribe(() => this.dialogRef.close(true));
     }
   }

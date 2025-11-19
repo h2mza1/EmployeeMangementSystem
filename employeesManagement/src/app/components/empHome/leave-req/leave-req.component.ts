@@ -89,7 +89,7 @@ onTypeChange(event: any) {
           },
           error:(err)=>
           {
-            console.log(err)
+           
           }
         }
       )

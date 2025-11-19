@@ -34,10 +34,9 @@ export class NavbarComponent implements OnInit {
         this.info=res.unique_name
         this.role=res.role
         this.userId=res.nameid
-      console.log(res)},
+     },
       error:(err)=>
       {
-        console.log(err)
       }
     })}
         }
@@ -57,7 +56,7 @@ ngOnInit(): void {
             this.info = user.unique_name;
             this.role = user.role;
             this.userId = user.nameid;
-            console.log('User Info:', user);
+         
 
             // ✅ تحميل حالة الـ CheckOut من السيرفر
             this.attendService.loadCheckOutState();
@@ -65,14 +64,14 @@ ngOnInit(): void {
             // ✅ متابعة حالة الـ CheckOut بشكل لحظي
             this.attendService.isCheckedOut$.subscribe(out => {
               this.out = out;
-              console.log('CheckedOut state:', out);
+             
             });
           },
           error: (err) => console.error('Failed to load user info', err)
         });
       }
     },
-    error: (err) => alert(err)
+    error: (err) => {}
   });
 } 
 
@@ -93,8 +92,7 @@ openDialog(id?:number)
 }
 checkOut() {
   this.attendService.checkOut().subscribe({
-    next: (res) => {console.log('Checked out successfully')
-      this.out=res
+    next: (res) => {
     },
     error: (err) => {console.error(err)}
   });

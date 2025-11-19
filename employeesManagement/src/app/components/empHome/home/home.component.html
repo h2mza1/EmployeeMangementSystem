@@ -136,54 +136,68 @@
 
   </div>
 
-  <!-- ======== LEAVE REQUESTS ======== -->
-  <div class="card shadow-sm rounded-4">
-    <div class="card-header bg-primary text-white text-center fw-semibold rounded-top-4">
-      My Leave Requests
-    </div>
-
-    <div class="card-body">
-
-      <div *ngIf="requests.length === 0" class="text-center text-muted fs-5">
-        No requests found.
-      </div>
-
-      <table *ngIf="requests.length > 0" class="table table-hover text-center">
-        <thead class="table-light">
-          <tr>
-            <th>Type</th>
-            <th>Date</th>
-            <th>End / Time</th>
-            <th>Reason</th>
-            <th>Status</th>
-            <th>Review By</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr *ngFor="let req of requests">
-            <td>{{ req.Type }}</td>
-            <td>{{ req.StartDate | date:'MMM dd, yyyy' }}</td>
-            <td>
-              <span *ngIf="req.EndDate">
-                {{ req.EndDate | date:'MMM dd, yyyy' }}
-              </span>
-              <span *ngIf="!req.EndDate">
-                {{ req.FromTime | date:'hh:mm a' }} - {{ req.ToTime | date:'hh:mm a' }}
-              </span>
-            </td>
-            <td>{{ req.Reason }}</td>
-            <td>{{ req.Status }}</td>
-            <td><span class="badge bg-primary">{{ req.ApprovedByName }}</span></td>
-          </tr>
-        </tbody>
-        <tfoot >
-          <h1>{{usedHours}} / 112</h1>
-        </tfoot>
-      </table>
-
-    </div>
+<!-- ======== LEAVE REQUESTS ======== -->
+<div class="card shadow-sm rounded-4">
+  <div class="card-header bg-primary text-white text-center fw-semibold rounded-top-4">
+    My Leave Requests
   </div>
+
+  <div class="card-body">
+
+    <div *ngIf="requests.length === 0" class="text-center text-muted fs-5">
+      No requests found.
+    </div>
+
+    <table *ngIf="requests.length > 0" class="table table-hover text-center">
+      <thead class="table-light">
+        <tr>
+          <th>Type</th>
+          <th>Date</th>
+          <th>End / Time</th>
+          <th>Reason</th>
+          <th>Status</th>
+          <th>Review By</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let req of requests">
+          <td>{{ req.Type }}</td>
+          <td>{{ req.StartDate | date:'MMM dd, yyyy' }}</td>
+          <td>
+            <span *ngIf="req.EndDate">
+              {{ req.EndDate | date:'MMM dd, yyyy' }}
+            </span>
+            <span *ngIf="!req.EndDate">
+              {{ req.FromTime | date:'hh:mm a' }} - {{ req.ToTime | date:'hh:mm a' }}
+            </span>
+          </td>
+          <td>{{ req.Reason }}</td>
+          <td>{{ req.Status }}</td>
+          <td><span class="badge bg-primary">{{ req.ApprovedByName }}</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ======== LEAVE HOURS SUMMARY ======== -->
+    <div class="row mt-4 g-3 justify-content-center">
+      <div class="col-6 col-md-3">
+        <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+          <h6 class="text-muted">Legal Hours</h6>
+          <span class="badge bg-info fs-6 px-3 py-2">{{ legalUsedHours }} / 112</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+          <h6 class="text-muted">Sick Hours</h6>
+          <span class="badge bg-warning text-dark fs-6 px-3 py-2">{{ sickUsedHours }} / 112</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 
 </div>
 

@@ -24,7 +24,7 @@ export class LeaveComponent implements OnInit {
         this.originalList = res;     // keep original data
         this.reqList = res;          // render to UI
       },
-      error: (err) => console.log(err),
+      error: (err) => {},
     });
   }
 

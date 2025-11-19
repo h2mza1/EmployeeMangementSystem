@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
     this.auth.login(this.loginForm.value).subscribe({
       next: (res) => {  
         this.auth.setToken(res.data);
-        console.log(res.data)
+       
         this.auth.userInfo$
         .subscribe(
         {
@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
 
       },
       error: (err) => {
-        console.error(err);
+      
       }
     });
   }

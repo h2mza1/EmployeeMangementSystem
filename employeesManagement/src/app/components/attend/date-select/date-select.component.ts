@@ -27,11 +27,6 @@ loadEmployee()
       .subscribe((res) => (this.AttenList = res))
 }
   filter() {
-    console.log('Filters Updated:', {
-      date: this.date,
-      absent: this.absent,
-      present: this.present,
-      searchItem: this.searchItem
-    });
+
   }
 }
