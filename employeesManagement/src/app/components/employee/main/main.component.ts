@@ -53,6 +53,7 @@ export class MainComponent implements OnInit {
   openAddOrUpdate(emp?: Employee) {
     const dialogRef = this.dialog.open(EntryComponent, {
       width: 'auto',
+    
       data: emp ? { ...emp } : { Id: 0 },
     });
 

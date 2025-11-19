@@ -26,7 +26,7 @@
         </div>
 
         <!-- Password -->
-        <div class="col-md-4">
+        <div class="col-md-4 " style="margin-top: 45px;">
           <input type="password" class="form-control" placeholder="Password"
                  [(ngModel)]="data.Password" name="Password" >
         </div>
@@ -82,10 +82,10 @@
 
         <!-- Buttons -->
         <div class="col-12 d-flex justify-content-end gap-2 mt-3">
-          <button type="submit" class="btn btn-success px-4" [disabled]="!addForm.checkValidity()"> 
-            <i class="bi bi-save me-1"></i> Save
+          <button type="submit" class="btn btn-primary m-1 px-4" [disabled]="!addForm.checkValidity()" mat-raised-button color="primary"> 
+            <i class="bi bi-save me-1" ></i> Save 
           </button>
-          <button type="button" class="btn btn-secondary px-4" (click)="close()">
+          <button type="button" class="btn btn-danger m-1" (click)="close()">
             <i class="bi bi-x-circle me-1"></i> Cancel
           </button>
         </div>

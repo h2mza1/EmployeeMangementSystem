@@ -136,7 +136,7 @@
               <td>{{ emp.StartDate | date : 'yyyy-MM-dd' }}</td>
               <td>{{ emp.EndDate | date : 'yyyy-MM-dd' }}</td>
               <td>
-                {{ emp.Salary | currency : 'JOD' : 'symbol' : '1.0-0' }}
+                {{ emp.Salary| customCurrency :'JOD':'1.0-0' }}
               </td>
               <td class="text-center">
                 <button

@@ -36,6 +36,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { SalarydetailsComponent } from './components/empHome/salarydetails/salarydetails.component';
 import { AttendanceComponent as EmpAttendance } from './components/empHome/attendance/attendance.component';
 import { AddLeaveComponent } from './components/leaveManage/add-leave/add-leave.component';
+import { CustomCurrencyPipe } from './pipes/custom-currency.pipe';
 @NgModule({
   declarations: [
     AppComponent,
@@ -61,7 +62,8 @@ import { AddLeaveComponent } from './components/leaveManage/add-leave/add-leave.
     LeaveReqComponent,
     SalarydetailsComponent,
     EmpAttendance,
-    AddLeaveComponent
+    AddLeaveComponent,
+    CustomCurrencyPipe
     
   ],
   imports: [

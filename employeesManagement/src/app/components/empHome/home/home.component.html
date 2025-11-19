@@ -77,12 +77,12 @@
 
         <div class="col-6 col-md-3">
           <h6 class="text-muted"><i class="bi bi-cash-stack"></i> Base Salary</h6>
-          <span class="badge bg-secondary fs-6 px-3 py-2">{{ latestSal?.BaseSalary ?? '' | currency:'USD' }}</span>
+          <span class="badge bg-secondary fs-6 px-3 py-2">{{ latestSal.BaseSalary   ?? '' | customCurrency :'JOD':'1.0-0' }}</span>
         </div>
 
         <div class="col-6 col-md-3">
           <h6 class="text-muted"><i class="bi bi-wallet2"></i> Deduction</h6>
-          <span class="badge bg-danger fs-6 px-3 py-2">{{ latestSal?.Deduction ?? '' | currency:'USD' }}</span>
+          <span class="badge bg-danger fs-6 px-3 py-2">{{ latestSal.Deduction ?? ''  | customCurrency :'JOD':'1.0-0'}}</span>
         </div>
 
         <div class="col-6 col-md-3">
@@ -92,7 +92,7 @@
 
         <div class="col-6 col-md-3">
           <h6 class="text-muted"><i class="bi bi-piggy-bank"></i> Total</h6>
-          <span class="badge bg-primary fs-6 px-3 py-2">{{ latestSal?.NetSalary ?? '' | currency:'USD' }}</span>
+          <span class="badge bg-primary fs-6 px-3 py-2">{{ latestSal.NetSalary ?? ''| customCurrency :'JOD':'1.0-0' }}</span>
         </div>
 
       </div>

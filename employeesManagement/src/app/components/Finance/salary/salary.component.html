@@ -75,9 +75,9 @@
               <td>{{ sal.EmployeeName }}</td>
               <td>{{ sal.Month }}</td>
               <td>{{ sal.Year }}</td>
-              <td>{{ sal.BaseSalary | currency:'JOD':'symbol':'1.0-0' }}</td>
-              <td>{{ sal.Deduction | currency:'JOD':'symbol':'1.0-0' }}</td>
-              <td class="fw-bold text-success">{{ sal.NetSalary | currency:'JOD':'symbol':'1.0-0' }}</td>
+              <td>{{ sal.BaseSalary | customCurrency :'JOD':'1.0-0' }}</td>
+              <td>{{ sal.Deduction | customCurrency :'JOD':'1.0-0' }}</td>
+              <td class="fw-bold text-success">{{ sal.NetSalary | customCurrency :'JOD':'1.0-0' }}</td>
               <td class="text-center">
                 <button class="btn btn-sm btn-danger" (click)="openDelete(sal.Id)">
                   <i class="bi bi-trash"></i>
@@ -96,7 +96,7 @@
           <tfoot class="table-secondary">
             <tr>
               <td colspan="8" class="text-end pe-4">
-                <strong>Total : {{ totalMonth | currency:'JOD':'symbol':'1.0-0' }}</strong>
+                <strong>Total : {{ totalMonth | customCurrency :'JOD':'1.0-0'}}</strong>
               </td>
             </tr>
           </tfoot>
